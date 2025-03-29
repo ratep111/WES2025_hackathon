@@ -1,9 +1,24 @@
 #!/bin/bash
 
+set -e
+
+# Check for clang-format
+echo "Checking for clang-format..."
+if ! command -v clang-format &>/dev/null; then
+    echo "clang-format not found. Attempting to install..."
+    if command -v apt &>/dev/null; then
+        sudo apt update && sudo apt install -y clang-format
+    else
+        echo "Error: apt not found. Please install clang-format manually." >&2
+        exit 1
+    fi
+else
+    echo "clang-format is already installed."
+fi
+
 # Initialize Github hooks
 echo "Initializing pre-commit hook to run formatter..."
 cp scripts/pre-commit-formatter.sh .git/hooks/pre-commit
-
 
 # Initialize and download all submodules
 echo "Initializing and updating submodules..."
@@ -43,4 +58,4 @@ else
     exit 1
 fi
 
-echo "Project ready for build!"
+echo "✅ Project ready for build!"
