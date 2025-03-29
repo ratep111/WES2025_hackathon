@@ -7,3 +7,6 @@
 [submodule "components/cJSON"]
 	path = components/cJSON
 	url = https://github.com/DaveGamble/cJSON
+[submodule "components/esp32-sht3x"]
+	path = components/esp32-sht3x
+	url = https://github.com/ma-lwa-re/esp32-sht3x

@@ -24,6 +24,16 @@ else
 fi
 cd ../..
 
+# Apply patch for SHT drivers to work with BL devkit
+echo "Applying patch for SHT drivers..."
+if cd components/esp32-sht3x && git apply ../esp32-sht3x.patch; then
+    echo "Patch applied successfully."
+else
+    echo "Error: Failed to apply patch." >&2
+    exit 1
+fi
+cd ../../..
+
 # Prepare sdkconfig for BL devkit
 echo "Copying sdkconfig for BL devkit..."
 if cp sdkconfig.defaults sdkconfig; then
