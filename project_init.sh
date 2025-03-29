@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Initialize Github hooks
+echo "Initializing pre-commit hook to run formatter..."
+cp scripts/pre-commit-formatter.sh .git/hooks/pre-commit
+
+
 # Initialize and download all submodules
 echo "Initializing and updating submodules..."
 if git submodule update --init --recursive; then
