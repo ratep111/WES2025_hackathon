@@ -4,3 +4,6 @@
 [submodule "components/lvgl_esp32_drivers"]
 	path = components/lvgl_esp32_drivers
 	url = https://github.com/lvgl/lvgl_esp32_drivers
+[submodule "components/cJSON"]
+	path = components/cJSON
+	url = https://github.com/DaveGamble/cJSON
