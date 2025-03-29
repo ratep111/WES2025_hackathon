@@ -1,10 +1,10 @@
 # Getting started
 
-⚠️ **Make sure you have ESP-IDF v5.0.2 installed and sourced before continuing.**
+⚠️ **Make sure you have ESP-IDF v5.0.2 installed before continuing.**
 
 After cloning the repo, run the project setup script:
 
-     ```./project_init.sh ```
+     ./project_init.sh 
 
 This will:
 
@@ -16,4 +16,4 @@ This will:
 
 Then build the project with:
 
-     ```idf.py build ```
+     idf.py build 
