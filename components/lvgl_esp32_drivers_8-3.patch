@@ -1,0 +1,376 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d86bd33..7bdaa0e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -79,7 +79,7 @@ endif()
+ 
+ idf_component_register(SRCS ${SOURCES}
+                        INCLUDE_DIRS ${LVGL_INCLUDE_DIRS}
+-                       REQUIRES lvgl)
++                       REQUIRES lvgl driver)
+                        
+ target_compile_definitions(${COMPONENT_LIB} PUBLIC "-DLV_LVGL_H_INCLUDE_SIMPLE")
+ 
+diff --git a/Kconfig b/Kconfig
+index ae11925..c6b5fb7 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -1,2 +1,18 @@
+ rsource "lvgl_tft/Kconfig"
+ rsource "lvgl_touch/Kconfig"
++
++menu "LVGL Display Size"
++
++	config LV_HOR_RES_MAX
++        int
++        prompt "Max. horizontal screen size."
++        range 0 1280
++            default 320
++
++    config LV_VER_RES_MAX
++        int
++        prompt "Max vertical screen size."
++	    range 0 800
++            default 240
++
++endmenu
+diff --git a/lvgl_helpers.c b/lvgl_helpers.c
+index 4125330..ffc6590 100644
+--- a/lvgl_helpers.c
++++ b/lvgl_helpers.c
+@@ -19,9 +19,9 @@
+ #include "driver/i2c.h"
+ 
+ #ifdef LV_LVGL_H_INCLUDE_SIMPLE
+-#include "src/lv_core/lv_refr.h"
++#include "src/core/lv_refr.h"
+ #else
+-#include "lvgl/src/lv_core/lv_refr.h"
++#include "lvgl/src/core/lv_refr.h"
+ #endif
+ 
+ /*********************
+diff --git a/lvgl_helpers.h b/lvgl_helpers.h
+index 70ef353..9c9e44c 100644
+--- a/lvgl_helpers.h
++++ b/lvgl_helpers.h
+@@ -33,6 +33,23 @@ extern "C" {
+  * color format being used, for RGB565 each pixel needs 2 bytes.
+  * When using the mono theme, the display pixels can be represented in one bit,
+  * so the buffer size can be divided by 8, e.g. see SSD1306 display size. */
++
++/* Maximal horizontal and vertical resolution to support by the library.*/
++#ifndef LV_HOR_RES_MAX
++#  ifdef CONFIG_LV_HOR_RES_MAX
++#    define LV_HOR_RES_MAX CONFIG_LV_HOR_RES_MAX
++#  else
++#    define  LV_HOR_RES_MAX          (480)
++#  endif
++#endif
++#ifndef LV_VER_RES_MAX
++#  ifdef CONFIG_LV_VER_RES_MAX
++#    define LV_VER_RES_MAX CONFIG_LV_VER_RES_MAX
++#  else
++#    define  LV_VER_RES_MAX          (320)
++#  endif
++#endif
++
+ #if defined (CONFIG_CUSTOM_DISPLAY_BUFFER_SIZE)
+ #define DISP_BUF_SIZE   CONFIG_CUSTOM_DISPLAY_BUFFER_BYTES
+ #else
+diff --git a/lvgl_tft/disp_spi.c b/lvgl_tft/disp_spi.c
+index 0e4e548..00e91a6 100644
+--- a/lvgl_tft/disp_spi.c
++++ b/lvgl_tft/disp_spi.c
+@@ -310,7 +310,7 @@ static void IRAM_ATTR spi_ready(spi_transaction_t *trans)
+         disp = lv_refr_get_disp_refreshing();
+ #endif
+ 
+-        lv_disp_flush_ready(&disp->driver);
++        lv_disp_flush_ready(disp->driver);
+     }
+ 
+     if (chained_post_cb) {
+diff --git a/lvgl_touch/FT81x.c b/lvgl_touch/FT81x.c
+index 266abc3..f331547 100644
+--- a/lvgl_touch/FT81x.c
++++ b/lvgl_touch/FT81x.c
+@@ -47,9 +47,8 @@
+ /**
+  * Get the current position and state of the touchpad
+  * @param data store the read data here
+- * @return false: because no more data to be read
+  */
+-bool FT81x_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
++void FT81x_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
+ {
+     static int16_t last_x = 0;
+     static int16_t last_y = 0;
+@@ -75,8 +74,6 @@ bool FT81x_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
+     data->point.x = X;
+     data->point.y = Y;
+     data->state = (touched == false ? LV_INDEV_STATE_REL : LV_INDEV_STATE_PR);
+-
+-    return false;
+ }
+ 
+ 
+diff --git a/lvgl_touch/FT81x.h b/lvgl_touch/FT81x.h
+index c788770..d07752d 100644
+--- a/lvgl_touch/FT81x.h
++++ b/lvgl_touch/FT81x.h
+@@ -33,7 +33,7 @@ extern "C" {
+  * GLOBAL PROTOTYPES
+  **********************/
+ ;
+-bool FT81x_read(lv_indev_drv_t * drv, lv_indev_data_t * data);
++void FT81x_read(lv_indev_drv_t * drv, lv_indev_data_t * data);
+ 
+ /**********************
+  *      MACROS
+diff --git a/lvgl_touch/adcraw.c b/lvgl_touch/adcraw.c
+index ac72dba..ed50a95 100644
+--- a/lvgl_touch/adcraw.c
++++ b/lvgl_touch/adcraw.c
+@@ -294,9 +294,8 @@ static int16_t TouchGetY(void)
+ /**
+  * Get the current position and state of the touchpad
+  * @param data store the read data here
+- * @return false: because no more data to be read
+  */
+-bool adcraw_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
++void adcraw_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
+ {
+ 	static int16_t last_x = 0;
+ 	static int16_t last_y = 0;
+@@ -318,7 +317,5 @@ bool adcraw_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
+ 		data->point.y = last_y;
+ 		data->state = LV_INDEV_STATE_REL;
+ 	}
+-
+-	return false;
+ }
+ #endif //CONFIG_LV_TOUCH_CONTROLLER_ADCRAW
+diff --git a/lvgl_touch/adcraw.h b/lvgl_touch/adcraw.h
+index 5015d12..6e8a14d 100644
+--- a/lvgl_touch/adcraw.h
++++ b/lvgl_touch/adcraw.h
+@@ -70,7 +70,7 @@ typedef enum {
+ } TOUCH_STATES; 
+ 
+ void adcraw_init(void);
+-bool adcraw_read(lv_indev_drv_t * drv, lv_indev_data_t * data);
++void adcraw_read(lv_indev_drv_t * drv, lv_indev_data_t * data);
+ 
+ #ifdef __cplusplus
+ } /* extern "C" */
+diff --git a/lvgl_touch/ft6x36.c b/lvgl_touch/ft6x36.c
+index 4b8324e..f17851a 100644
+--- a/lvgl_touch/ft6x36.c
++++ b/lvgl_touch/ft6x36.c
+@@ -117,9 +117,8 @@ void ft6x06_init(uint16_t dev_addr) {
+   * @brief  Get the touch screen X and Y positions values. Ignores multi touch
+   * @param  drv:
+   * @param  data: Store data here
+-  * @retval Always false
+   */
+-bool ft6x36_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
++void ft6x36_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
+     uint8_t data_xy[4];        // 2 bytes X | 2 bytes Y
+     uint8_t touch_pnt_cnt;        // Number of detected touch points
+     static int16_t last_x = 0;  // 12bit pixel value
+@@ -130,7 +129,7 @@ bool ft6x36_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
+         data->point.x = last_x;
+         data->point.y = last_y;
+         data->state = LV_INDEV_STATE_REL;
+-        return false;
++        return;
+     }
+ 
+     // Read X value
+@@ -153,7 +152,7 @@ bool ft6x36_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
+         data->point.x = last_x;
+         data->point.y = last_y;
+         data->state = LV_INDEV_STATE_REL;   // no touch detected
+-        return false;
++        return;
+     }
+ 
+     // Read Y value
+@@ -176,7 +175,7 @@ bool ft6x36_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
+         data->point.x = last_x;
+         data->point.y = last_y;
+         data->state = LV_INDEV_STATE_REL;   // no touch detected
+-        return false;
++        return;
+     }
+ 
+     last_x = ((data_xy[0] & FT6X36_MSB_MASK) << 8) | (data_xy[1] & FT6X36_LSB_MASK);
+@@ -197,5 +196,4 @@ bool ft6x36_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
+     data->point.y = last_y;
+     data->state = LV_INDEV_STATE_PR;
+     ESP_LOGV(TAG, "X=%u Y=%u", data->point.x, data->point.y);
+-    return false;
+ }
+diff --git a/lvgl_touch/ft6x36.h b/lvgl_touch/ft6x36.h
+index da466b6..462b2bd 100644
+--- a/lvgl_touch/ft6x36.h
++++ b/lvgl_touch/ft6x36.h
+@@ -158,9 +158,8 @@ uint8_t ft6x36_get_gesture_id();
+   * @brief  Get the touch screen X and Y positions values. Ignores multi touch
+   * @param  drv:
+   * @param  data: Store data here
+-  * @retval Always false
+   */
+-bool ft6x36_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
++void ft6x36_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
+ 
+ #ifdef __cplusplus
+ }
+diff --git a/lvgl_touch/ra8875_touch.c b/lvgl_touch/ra8875_touch.c
+index 3340e4f..407b272 100644
+--- a/lvgl_touch/ra8875_touch.c
++++ b/lvgl_touch/ra8875_touch.c
+@@ -102,9 +102,8 @@ void ra8875_touch_enable(bool enable)
+ /**
+  * Get the current position and state of the touchscreen
+  * @param data store the read data here
+- * @return false: because no more data to be read
+  */
+-bool ra8875_touch_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
++void ra8875_touch_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
+ {
+     static int x = 0;
+     static int y = 0;
+@@ -138,8 +137,6 @@ bool ra8875_touch_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
+ #if DEBUG
+         ESP_LOGI(TAG, "Touch Poll - Event: %d; %d,%d", data->state, data->point.x, data->point.y);
+ #endif
+-
+-    return false;
+ }
+ 
+ 
+diff --git a/lvgl_touch/stmpe610.c b/lvgl_touch/stmpe610.c
+index 0f8410f..b1c0271 100644
+--- a/lvgl_touch/stmpe610.c
++++ b/lvgl_touch/stmpe610.c
+@@ -110,9 +110,8 @@ void stmpe610_init(void)
+ /**
+  * Get the current position and state of the touchpad
+  * @param data store the read data here
+- * @return false: because no more data to be read
+  */
+-bool stmpe610_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
++void stmpe610_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
+ {
+     static int16_t last_x = 0;
+     static int16_t last_y = 0;
+@@ -157,8 +156,6 @@ bool stmpe610_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
+     data->point.x = (int16_t) x;
+     data->point.y = (int16_t) y;
+     data->state = valid == false ? LV_INDEV_STATE_REL : LV_INDEV_STATE_PR;
+-
+-    return false;
+ }
+ 
+ 
+diff --git a/lvgl_touch/stmpe610.h b/lvgl_touch/stmpe610.h
+index 153a6e7..6857cde 100644
+--- a/lvgl_touch/stmpe610.h
++++ b/lvgl_touch/stmpe610.h
+@@ -172,7 +172,7 @@ extern "C" {
+  * GLOBAL PROTOTYPES
+  **********************/
+ void stmpe610_init(void);
+-bool stmpe610_read(lv_indev_drv_t * drv, lv_indev_data_t * data);
++void stmpe610_read(lv_indev_drv_t * drv, lv_indev_data_t * data);
+ 
+ /**********************
+  *      MACROS
+diff --git a/lvgl_touch/touch_driver.c b/lvgl_touch/touch_driver.c
+index b0aed88..a3ad9f5 100644
+--- a/lvgl_touch/touch_driver.c
++++ b/lvgl_touch/touch_driver.c
+@@ -24,24 +24,22 @@ void touch_driver_init(void)
+ #endif
+ }
+ 
+-bool touch_driver_read(lv_indev_drv_t *drv, lv_indev_data_t *data)
++void touch_driver_read(lv_indev_drv_t *drv, lv_indev_data_t *data)
+ {
+-    bool res = false;
+ 
+ #if defined (CONFIG_LV_TOUCH_CONTROLLER_XPT2046)
+-    res = xpt2046_read(drv, data);
++    xpt2046_read(drv, data);
+ #elif defined (CONFIG_LV_TOUCH_CONTROLLER_FT6X06)
+-    res = ft6x36_read(drv, data);
++    ft6x36_read(drv, data);
+ #elif defined (CONFIG_LV_TOUCH_CONTROLLER_STMPE610)
+-    res = stmpe610_read(drv, data);
++    stmpe610_read(drv, data);
+ #elif defined (CONFIG_LV_TOUCH_CONTROLLER_ADCRAW)
+-    res = adcraw_read(drv, data);
++    adcraw_read(drv, data);
+ #elif defined (CONFIG_LV_TOUCH_CONTROLLER_FT81X)
+-    res = FT81x_read(drv, data);
++    FT81x_read(drv, data);
+ #elif defined (CONFIG_LV_TOUCH_CONTROLLER_RA8875)
+-    res = ra8875_touch_read(drv, data);
++    ra8875_touch_read(drv, data);
+ #endif
+ 
+-    return res;
+ }
+ 
+diff --git a/lvgl_touch/touch_driver.h b/lvgl_touch/touch_driver.h
+index bc92f4f..262c735 100644
+--- a/lvgl_touch/touch_driver.h
++++ b/lvgl_touch/touch_driver.h
+@@ -42,7 +42,7 @@ extern "C" {
+  * GLOBAL PROTOTYPES
+  **********************/
+ void touch_driver_init(void);
+-bool touch_driver_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
++void touch_driver_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
+ 
+ #ifdef __cplusplus
+ } /* extern "C" */
+diff --git a/lvgl_touch/xpt2046.c b/lvgl_touch/xpt2046.c
+index 93b4329..d75fb7b 100644
+--- a/lvgl_touch/xpt2046.c
++++ b/lvgl_touch/xpt2046.c
+@@ -78,9 +78,8 @@ void xpt2046_init(void)
+ /**
+  * Get the current position and state of the touchpad
+  * @param data store the read data here
+- * @return false: because no more data to be read
+  */
+-bool xpt2046_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
++void xpt2046_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
+ {
+     static int16_t last_x = 0;
+     static int16_t last_y = 0;
+@@ -116,8 +115,6 @@ bool xpt2046_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
+     data->point.x = x;
+     data->point.y = y;
+     data->state = valid == false ? LV_INDEV_STATE_REL : LV_INDEV_STATE_PR;
+-
+-    return false;
+ }
+ 
+ /**********************
+diff --git a/lvgl_touch/xpt2046.h b/lvgl_touch/xpt2046.h
+index 016a351..7582abb 100644
+--- a/lvgl_touch/xpt2046.h
++++ b/lvgl_touch/xpt2046.h
+@@ -48,7 +48,7 @@ extern "C" {
+  * GLOBAL PROTOTYPES
+  **********************/
+ void xpt2046_init(void);
+-bool xpt2046_read(lv_indev_drv_t * drv, lv_indev_data_t * data);
++void xpt2046_read(lv_indev_drv_t * drv, lv_indev_data_t * data);
+ 
+ /**********************
+  *      MACROS

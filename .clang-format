@@ -1,0 +1,129 @@
+---
+# for option description please refer: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+Language: Cpp
+BasedOnStyle: LLVM
+AccessModifierOffset: -4
+AlignAfterOpenBracket: DontAlign
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: true
+  PadOperators: true
+AlignConsecutiveBitFields:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+AlignConsecutiveDeclarations:
+  Enabled: false
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: true
+  PadOperators: true
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+AlignEscapedNewlines: Left
+AlignOperands: Align
+AlignTrailingComments: Always
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: None
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BitFieldColonSpacing: Both
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+BreakAfterAttributes: Never
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Attach
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeColon
+BreakInheritanceList: BeforeColon
+ColumnLimit: 120
+CommentPragmas: '@(file|param|li|warning|author|details|relates|date|brief|todo)|TODO|PRQA|DO|GLOBAL|PRIVATE|PUBLIC|INCLUDE|END|AUTOSAR|CONSTANTS|Runnable|DESCRIPTION|MODIFICATIONS|!'
+CompactNamespaces: false
+ContinuationIndentWidth: 8
+Cpp11BracedListStyle: false
+ExperimentalAutoDetectBinPacking: true
+IndentCaseBlocks: true
+IndentCaseLabels: true
+IndentPPDirectives: None
+IndentWrappedFunctionNames: true
+IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: true
+LineEnding: DeriveCRLF
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: All
+ObjCSpaceAfterProperty: false
+ObjCSpaceBeforeProtocolList: true
+PenaltyBreakAssignment: 1
+PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyBreakFirstLessLess: 1
+PenaltyBreakOpenParenthesis: 2
+PenaltyExcessCharacter: 100
+PenaltyIndentedWhitespace: 200
+PenaltyReturnTypeOnItsOwnLine: 300
+PointerAlignment: Right
+ReflowComments: false
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: Never
+SpaceBeforeRangeBasedForLoopColon: false
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: false
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: 1
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SortIncludes: Never
+Standard: Latest
+TabWidth: 4
+UseTab: Never
+# add AUTOSAR related macros so that CLang-format skips formatting
+WhitespaceSensitiveMacros:
+  - 'FUNC'
+  - 'FUNC_P2CONST'
+  - 'FUNC_P2VAR'
+  - 'P2VAR'
+  - 'P2CONST'
+  - 'CONSTP2VAR'
+  - 'CONSTP2CONST'
+  - 'P2FUNC'
+  - 'CONSTP2FUNC'
+  - 'CONST'
+  - 'VAR'
+  - 'INLINE'
+  - 'LOCAL_INLINE'
+...
