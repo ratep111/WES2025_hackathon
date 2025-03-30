@@ -67,8 +67,8 @@ else
 fi
 
 # Handle SHT drivers patch
-SHT_PATCH="../esp32-sht3x.patch"
-SHT_DIR="components/esp32-sht3x"
+SHT_PATCH="../../esp32-sht3x.patch"
+SHT_DIR="components/sht3x-dis/esp32-sht3x"
 echo -e "${BLUE}Checking SHT drivers patch status...${RESET}"
 if is_patch_applied "$SHT_PATCH" "$SHT_DIR"; then
     echo -e "${GREEN}SHT drivers patch is already applied.${RESET}"
