@@ -23,6 +23,7 @@ jobs:
         EXCLUDED_PATTERNS=(
           "*/lvgl/*"
           "*/lvgl_esp32_drivers/*"
+          "*/gui/*"
         )
 
         # Build find command with exclusions
