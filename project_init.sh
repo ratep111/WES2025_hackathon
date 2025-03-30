@@ -2,60 +2,67 @@
 
 set -e
 
+# Define color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
 # Check for clang-format
-echo "Checking for clang-format..."
-if ! command -v clang-format &>/dev/null; then
-    echo "clang-format not found. Attempting to install..."
+echo -e "${BLUE}Checking for clang-format...${NC}"
+if ! command -v clang-format &> /dev/null; then
+    echo -e "${YELLOW}clang-format not found. Attempting to install...${NC}"
     if command -v apt &>/dev/null; then
         sudo apt update && sudo apt install -y clang-format
     else
-        echo "Error: apt not found. Please install clang-format manually." >&2
+        echo -e "${RED}Error: apt not found. Please install clang-format manually.${NC}" >&2
         exit 1
     fi
 else
-    echo "clang-format is already installed."
+    echo -e "${GREEN}clang-format is already installed.${NC}"
 fi
 
 # Initialize Github hooks
-echo "Initializing pre-commit hook to run formatter..."
+echo -e "${BLUE}Initializing pre-commit hook to run formatter...${NC}"
 cp scripts/pre-commit-formatter.sh .git/hooks/pre-commit
 
 # Initialize and download all submodules
-echo "Initializing and updating submodules..."
+echo -e "${BLUE}Initializing and updating submodules...${NC}"
 if git submodule update --init --recursive; then
-    echo "Submodules updated successfully."
+    echo -e "${GREEN}Submodules updated successfully.${NC}"
 else
-    echo "Error: Failed to update submodules." >&2
+    echo -e "${RED}Error: Failed to update submodules.${NC}" >&2
     exit 1
 fi
 
 # Apply patch for ESP LVGL drivers to work with BL devkit
-echo "Applying patch for ESP LVGL drivers..."
+echo -e "${BLUE}Applying patch for ESP LVGL drivers...${NC}"
 if cd components/lvgl_esp32_drivers && git apply ../lvgl_esp32_drivers_8-3.patch; then
-    echo "Patch applied successfully."
+    echo -e "${GREEN}Patch applied successfully.${NC}"
 else
-    echo "Error: Failed to apply patch." >&2
+    echo -e "${RED}Error: Failed to apply patch.${NC}" >&2
     exit 1
 fi
 cd ../..
 
 # Apply patch for SHT drivers to work with BL devkit
-echo "Applying patch for SHT drivers..."
+echo -e "${BLUE}Applying patch for SHT drivers...${NC}"
 if cd components/esp32-sht3x && git apply ../esp32-sht3x.patch; then
-    echo "Patch applied successfully."
+    echo -e "${GREEN}Patch applied successfully.${NC}"
 else
-    echo "Error: Failed to apply patch." >&2
+    echo -e "${RED}Error: Failed to apply patch.${NC}" >&2
     exit 1
 fi
-cd ../../..
+cd ../..
 
 # Prepare sdkconfig for BL devkit
-echo "Copying sdkconfig for BL devkit..."
+echo -e "${BLUE}Copying sdkconfig for BL devkit...${NC}"
 if cp sdkconfig.defaults sdkconfig; then
-    echo "sdkconfig prepared successfully."
+    echo -e "${GREEN}sdkconfig prepared successfully.${NC}"
 else
-    echo "Error: Failed to copy sdkconfig." >&2
+    echo -e "${RED}Error: Failed to copy sdkconfig.${NC}" >&2
     exit 1
 fi
 
-echo "✅ Project ready for build!"
+echo -e "${GREEN}✅ Project ready for build!${NC}"

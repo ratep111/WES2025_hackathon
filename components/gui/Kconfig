@@ -1,0 +1,19 @@
+menu "UI application"
+
+	choice UI_APP
+
+        prompt "UI app"
+        default UI_APP_LVGL_DEMO
+        help
+            Which UI application to use
+        
+        config UI_APP_BL_GUI
+            bool "BL gui example"
+        config UI_APP_LVGL_DEMO
+            bool "LVGL demo example"
+        config UI_APP_SQUARELINE
+            bool "SquareLine generated example"
+        
+    endchoice
+
+endmenu
