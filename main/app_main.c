@@ -10,6 +10,7 @@
 #include "gui/gui.h"
 #include "sht3x.h"
 #include "pcf8523.h"
+#include "button.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -30,6 +31,11 @@
 
 static void temp_sens_task(void *args);
 static void rtc_task(void *args);
+static void button_task(void *args);
+static void button1_pressed(void *args);
+static void button2_pressed(void *args);
+static void button3_pressed(void *args);
+static void button4_pressed(void *args);
 
 /*******************************************************************************/
 /*                          STATIC DATA & CONSTANTS                            */
@@ -68,6 +74,7 @@ void app_main() {
     ESP_LOGI(TAG, "Creating temperature sensor task...");
     xTaskCreate(temp_sens_task, "temp_sens_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(rtc_task, "rtc_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    xTaskCreate(button_task, "button_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
 }
 
 /*******************************************************************************/
@@ -125,8 +132,35 @@ static void rtc_task(void *args) {
 
         vTaskDelayUntil(&last_wake_time, 2000 / portTICK_PERIOD_MS);
     }
+
+    vTaskDelete(NULL);
+}
+
+static void button_task(void *args) {
+    button_create(BUTTON_1, button1_pressed);
+    button_create(BUTTON_2, button2_pressed);
+    button_create(BUTTON_3, button3_pressed);
+    button_create(BUTTON_4, button4_pressed);
+
+    vTaskDelete(NULL);
 }
 
 /*******************************************************************************/
 /*                             INTERRUPT HANDLERS                              */
 /*******************************************************************************/
+
+
+static void button1_pressed(void *args) {
+    ESP_LOGI(TAG, "button 1 pressed");
+}
+static void button2_pressed(void *args) {
+    ESP_LOGI(TAG, "button 2 pressed");
+}
+
+static void button3_pressed(void *args) {
+    ESP_LOGI(TAG, "button 3 pressed");
+}
+
+static void button4_pressed(void *args) {
+    ESP_LOGI(TAG, "button 4 pressed");
+}
