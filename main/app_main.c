@@ -11,6 +11,7 @@
 #include "sht3x.h"
 #include "pcf8523.h"
 #include "button.h"
+#include "at24cx_i2c.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -32,6 +33,7 @@
 static void temp_sens_task(void *args);
 static void rtc_task(void *args);
 static void button_task(void *args);
+static void eeprom_task(void *args);
 static void button1_pressed(void *args);
 static void button2_pressed(void *args);
 static void button3_pressed(void *args);
@@ -47,7 +49,7 @@ static const i2c_config_t _i2c_config = {
     .sda_io_num       = GPIO_NUM_22,
     .sda_pullup_en    = GPIO_PULLUP_ENABLE,
     .scl_pullup_en    = GPIO_PULLUP_ENABLE,
-    .master.clk_speed = 400000, // 10 KHz, SHT can go up to 1 MHZ.
+    .master.clk_speed = 200000,
     .clk_flags        = 0,
 };
 
@@ -75,6 +77,7 @@ void app_main() {
     xTaskCreate(temp_sens_task, "temp_sens_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(rtc_task, "rtc_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(button_task, "button_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    xTaskCreate(eeprom_task, "eeprom_task", 2 * TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
 }
 
 /*******************************************************************************/
@@ -141,6 +144,45 @@ static void button_task(void *args) {
     button_create(BUTTON_2, button2_pressed);
     button_create(BUTTON_3, button3_pressed);
     button_create(BUTTON_4, button4_pressed);
+
+    vTaskDelete(NULL);
+}
+
+static void eeprom_task(void *args) {
+#define AT24CX_SIZE 256
+
+    at24cx_dev_t eeprom_1;
+
+    at24cx_i2c_hal_init();
+
+    ESP_LOGI(TAG, "Initializing AT24CX. . .");
+
+    //Register device
+    at24cx_i2c_device_register(&eeprom_1, AT24CX_SIZE, I2C_ADDRESS_AT24CX);
+
+    //Check if eeprom_1 is active
+    ESP_LOGI(TAG, "eeprom_1 is %s", eeprom_1.status ? "detected" : "not detected");
+
+    ESP_LOGI(TAG, "Write byte demo: This will write value 0 at address 0x00, 1 at address 0x01 and so on");
+    for(int i = 0; i < 10; i++) {
+        at24cx_writedata_t dt = { .address = i, .data = i };
+
+        if(at24cx_i2c_byte_write(eeprom_1, dt) == AT24CX_OK)
+            ESP_LOGI(TAG, "Writing at address 0x%02X: %d", dt.address, dt.data);
+        else
+            ESP_LOGE(TAG, "Device write error!");
+    }
+
+    ESP_LOGI(TAG, "Read byte demo: Obtain values from addresses 0x00 to 0x09, values should be from 0 to 9 respectively");
+    for(int i = 0; i < 10; i++) {
+        at24cx_writedata_t dt = {
+            .address = i,
+        };
+        if(at24cx_i2c_byte_read(eeprom_1, &dt) == AT24CX_OK)
+            ESP_LOGI(TAG, "Reading at address 0x%02X: %d", dt.address, dt.data);
+        else
+            ESP_LOGE(TAG, "Device read error!");
+    }
 
     vTaskDelete(NULL);
 }
