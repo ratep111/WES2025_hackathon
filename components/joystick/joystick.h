@@ -1,8 +1,12 @@
 #ifndef JOYSTICK_H
 #define JOYSTICK_H
 
+//--------------------------------- INCLUDES ----------------------------------
 #include "esp_err.h"
 
+//---------------------------------- MACROS -----------------------------------
+
+//-------------------------------- DATA TYPES ---------------------------------
 enum joystick_pos_t {
     INPUT_PUSH_BUTTON,
     INPUT_UP,
@@ -12,7 +16,12 @@ enum joystick_pos_t {
     INPUT_CENTER
 };
 
-esp_err_t joystick_init(void);
-enum joystick_pos_t get_joystick_position(void);
+typedef void (*joystick_callback_t)(enum joystick_pos_t pos);
 
-#endif
+//---------------------- PUBLIC FUNCTION PROTOTYPES --------------------------
+
+esp_err_t joystick_init(void);
+enum joystick_pos_t joystick_get_position(void);
+void joystick_register_callback(joystick_callback_t cb);
+
+#endif // JOYSTICK_H
