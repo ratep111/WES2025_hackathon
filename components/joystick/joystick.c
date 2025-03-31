@@ -1,6 +1,11 @@
-/*******************************************************************************/
-/*                                  INCLUDES                                   */
-/*******************************************************************************/
+/**
+ * @file joystick.c
+ *
+ * @brief This file controls the joystick.
+ *
+ */
+
+//--------------------------------- INCLUDES ----------------------------------
 #include <stdio.h>
 #include <string.h>
 #include "esp_log.h"
@@ -9,9 +14,7 @@
 #include "esp_adc/adc_cali_scheme.h"
 #include "joystick.h"
 
-/*******************************************************************************/
-/*                                   MACROS                                    */
-/*******************************************************************************/
+//---------------------------------- MACROS -----------------------------------
 #define TAG "JOYSTICK"
 
 #if CONFIG_IDF_TARGET_ESP32
@@ -20,31 +23,43 @@
 #define JOY_ATTEN  ADC_ATTEN_DB_11
 #endif
 
-/*******************************************************************************/
-/*                                 DATA TYPES                                  */
-/*******************************************************************************/
+//-------------------------------- DATA TYPES ---------------------------------
 
-/*******************************************************************************/
-/*                         PRIVATE FUNCTION PROTOTYPES                         */
-/*******************************************************************************/
+//---------------------- PRIVATE FUNCTION PROTOTYPES --------------------------
+
+/**
+ * @brief Logs the joystick position as a string.
+ *
+ * @param input The current joystick position.
+ */
 static void _joystick_log_position(int input);
+
+/**
+ * @brief Calibrates the ADC for the given channel.
+ *
+ * @param unit ADC unit.
+ * @param channel ADC channel.
+ * @param atten Attenuation level.
+ * @param out_handle Pointer to store the calibration handle.
+ * @return true if calibration succeeded, false otherwise.
+ */
 static bool _joystick_adc_calibrate(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle);
+
+/**
+ * @brief Deinitializes the ADC calibration.
+ *
+ * @param handle Calibration handle to delete.
+ */
 static void _joystick_adc_calibrate_deinit(adc_cali_handle_t handle);
 
-/*******************************************************************************/
-/*                          STATIC DATA & CONSTANTS                            */
-/*******************************************************************************/
+//------------------------- STATIC DATA & CONSTANTS ---------------------------
 static int last_input = INPUT_CENTER;
 static adc_oneshot_unit_handle_t adc1_handle;
 static joystick_callback_t callback = NULL;
 
-/*******************************************************************************/
-/*                                 GLOBAL DATA                                 */
-/*******************************************************************************/
+//------------------------------- GLOBAL DATA ---------------------------------
 
-/*******************************************************************************/
-/*                              PUBLIC FUNCTIONS                               */
-/*******************************************************************************/
+//------------------------------ PUBLIC FUNCTIONS -----------------------------
 esp_err_t joystick_init(void) {
     adc_oneshot_unit_init_cfg_t unit_cfg = { .unit_id = ADC_UNIT_1 };
     ESP_ERROR_CHECK(adc_oneshot_new_unit(&unit_cfg, &adc1_handle));
@@ -97,9 +112,7 @@ void joystick_register_callback(joystick_callback_t cb) {
     callback = cb;
 }
 
-/*******************************************************************************/
-/*                             PRIVATE FUNCTIONS                               */
-/*******************************************************************************/
+//---------------------------- PRIVATE FUNCTIONS ------------------------------
 static void _joystick_log_position(int input) {
     switch(input) {
         case INPUT_UP:
@@ -171,6 +184,4 @@ static void _joystick_adc_calibrate_deinit(adc_cali_handle_t handle) {
 #endif
 }
 
-/*******************************************************************************/
-/*                             INTERRUPT HANDLERS                              */
-/*******************************************************************************/
+//---------------------------- INTERRUPT HANDLERS -----------------------------
