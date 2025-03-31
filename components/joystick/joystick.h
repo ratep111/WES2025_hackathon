@@ -8,6 +8,10 @@
 #ifndef JOYSTICK_H
 #define JOYSTICK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //--------------------------------- INCLUDES ----------------------------------
 #include "esp_err.h"
 
@@ -64,5 +68,9 @@ enum joystick_pos_t joystick_get_position(void);
  * @param cb Callback function of type joystick_callback_t.
  */
 void joystick_register_callback(joystick_callback_t cb);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // JOYSTICK_H
