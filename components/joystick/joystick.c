@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include "esp_log.h"
-#include "esp_err.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 #include "esp_adc/adc_oneshot.h"
 #include "esp_adc/adc_cali.h"
 #include "esp_adc/adc_cali_scheme.h"
+
+#include "joystick.h"
 
 #define TAG "JOYSTICK"
 
@@ -16,15 +17,6 @@
 #define JOY_Y_CHAN ADC_CHANNEL_7
 #define JOY_ATTEN  ADC_ATTEN_DB_11
 #endif
-
-enum input_t {
-    INPUT_PUSH_BUTTON,
-    INPUT_UP,
-    INPUT_DOWN,
-    INPUT_RIGHT,
-    INPUT_LEFT,
-    INPUT_CENTER
-};
 
 static int last_input = INPUT_CENTER;
 static adc_oneshot_unit_handle_t adc1_handle;
@@ -76,6 +68,10 @@ esp_err_t joystick_init(void) {
     }
 
     return ESP_OK;
+}
+
+enum joystick_pos_t get_joystick_position(void) {
+    return last_input;
 }
 
 static void joystick_task(void *arg) {
