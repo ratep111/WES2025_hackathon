@@ -67,9 +67,18 @@ jobs:
         path: |
           ~/esp/esp-idf
           ~/.espressif
-        key: ${{ runner.os }}-esp-idf-5.0.2-${{ hashFiles('**/requirements.txt') }}
+        key: esp-idf-5.0.2
 
-    - name: Install ESP-IDF v5.0.2 (if not cached)
+    - name: Verify ESP-IDF cache
+      run: |
+        if [ -f ~/esp/esp-idf/install.sh ]; then
+          echo "ESP-IDF exists in cache"
+          ls -la ~/esp/esp-idf
+        else
+          echo "No ESP-IDF cache found"
+        fi
+
+    - name: Install ESP-IDF v5.0.2
       if: steps.cache-esp-idf.outputs.cache-hit != 'true'
       run: |
         sudo apt-get update

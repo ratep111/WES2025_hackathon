@@ -33,8 +33,9 @@ esp_err_t pcf8523_init(i2c_port_t port, gpio_num_t sda_gpio, gpio_num_t scl_gpio
         .scl_pullup_en          = GPIO_PULLUP_ENABLE,
         .master.clk_speed       = I2C_FREQ_HZ,
         .clk_flags              = 0 };
-    ESP_ERROR_CHECK(i2c_param_config(port, &conf));
-    return i2c_driver_install(port, I2C_MODE_MASTER, 0, 0, 0);
+    // ESP_ERROR_CHECK(i2c_param_config(port, &conf));
+    // return i2c_driver_install(port, I2C_MODE_MASTER, 0, 0, 0);
+    return ESP_OK;
 }
 
 esp_err_t pcf8523_set_time(const struct tm *time) {

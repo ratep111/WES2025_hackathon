@@ -1,0 +1,10 @@
+menu "Joystick"
+
+    config JOYSTICK_ENABLE_LOGGING
+        bool "Enable joystick logging"
+        default y
+        help
+            Enable logging in the joystick driver.
+    
+endmenu
+    
