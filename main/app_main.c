@@ -2,6 +2,13 @@
 /*                                  INCLUDES                                   */
 /*******************************************************************************/
 #include "gui/gui.h"
+#include "LIS2DH12TR.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+#define TAG "MAIN"
+
 /*******************************************************************************/
 /*                                   MACROS                                     */
 /*******************************************************************************/
@@ -13,6 +20,8 @@
 /*******************************************************************************/
 /*                         PRIVATE FUNCTION PROTOTYPES                         */
 /*******************************************************************************/
+
+static void accelerometer_task(void *pvParameters);
 
 /*******************************************************************************/
 /*                          STATIC DATA & CONSTANTS                            */
@@ -27,11 +36,27 @@
 /*******************************************************************************/
 void app_main() {
     gui_init();
+
+    xTaskCreate(accelerometer_task, "accelerometer_task", 4096, NULL, 5, NULL);
 }
 
 /*******************************************************************************/
 /*                             PRIVATE FUNCTIONS                               */
 /*******************************************************************************/
+
+void accelerometer_task(void *pvParameters) {
+    LIS2DH12TR_accelerations acc = { 0 };
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    LIS2DH12TR_init();
+
+    while(1) {
+        LIS2DH12TR_read_acc(&acc);
+        ESP_LOGI(TAG, "x: %f, y: %f, z: %f", acc.x_acc, acc.y_acc, acc.z_acc);
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
+
 
 /*******************************************************************************/
 /*                             INTERRUPT HANDLERS                              */

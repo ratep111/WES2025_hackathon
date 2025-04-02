@@ -11,6 +11,7 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "driver/spi_master.h"
+#include "driver/gpio.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -82,44 +83,28 @@ static spi_device_handle_t _esp_spi_hdev;
 /*                              PUBLIC FUNCTIONS                               */
 /*******************************************************************************/
 
-LIS2DH12TR_init_status LIS2DH12TR_init()
-{
-    spi_device_interface_config_t spi_device_config = {
-        .clock_speed_hz = LIS2DH12TR_SPI_freqeuncy,
-        .mode = 0,
-        .spics_io_num = LIS2DH12TR_SPI_IO_NUM,
-        .queue_size = LIS2DH12TR_SPI_QUEUE_SIZE,
-        .flags = 0,
-        .pre_cb = NULL,
-        .post_cb = NULL,
-        .address_bits = 8
-    };
+LIS2DH12TR_init_status LIS2DH12TR_init() {
 
-    esp_err_t _err_value = spi_bus_add_device(VSPI_HOST, &spi_device_config, &_esp_spi_hdev);
-    
-    if (_err_value != ESP_OK) 
-    {
-        ESP_LOGE(
-            LIS2DH12TR_LOG_TAG, 
-            "SPI bus couldn't be initialized, error cause: %s",
-            esp_err_to_name(_err_value)
-        );
-        return LIS2DH12TR_SPI_ERROR;
-    }
+    spi_device_interface_config_t spi_device_config = { .clock_speed_hz = LIS2DH12TR_SPI_freqeuncy,
+        .mode                                                           = 0,
+        .spics_io_num                                                   = LIS2DH12TR_SPI_IO_NUM,
+        .queue_size                                                     = LIS2DH12TR_SPI_QUEUE_SIZE,
+        .flags                                                          = 0,
+        .pre_cb                                                         = NULL,
+        .post_cb                                                        = NULL,
+        .address_bits                                                   = 8 };
+
+    ESP_ERROR_CHECK(spi_bus_add_device(VSPI_HOST, &spi_device_config, &_esp_spi_hdev));
 
     _lsi2dh12_core_ctx.write_reg = _lsi2dh12_core_write;
     _lsi2dh12_core_ctx.read_reg  = _lsi2dh12_core_read;
-    _lsi2dh12_core_ctx.handle = &_esp_spi_hdev;
+    _lsi2dh12_core_ctx.handle    = &_esp_spi_hdev;
 
     uint8_t dev_id;
     lis2dh12_device_id_get(&_lsi2dh12_core_ctx, &dev_id);
 
-    if (dev_id != LIS2DH12_ID) 
-    {
-        ESP_LOGE(
-            LIS2DH12TR_LOG_TAG,
-            "Received an unexpected ID from the device"
-        );
+    if(dev_id != LIS2DH12_ID) {
+        ESP_LOGE(LIS2DH12TR_LOG_TAG, "Received an unexpected ID from the device");
         return LIS2DH12TR_ID_MISMATCH;
     }
 
@@ -135,37 +120,26 @@ LIS2DH12TR_init_status LIS2DH12TR_init()
     return LIS2DH12TR_OK;
 }
 
-LIS2DH12TR_reading_status LIS2DH12TR_read_acc(LIS2DH12TR_accelerations *acc_output)
-{
+LIS2DH12TR_reading_status LIS2DH12TR_read_acc(LIS2DH12TR_accelerations *acc_output) {
     int16_t data_raw_acceleration[3];
 
     lis2dh12_reg_t reg;
-    if (lis2dh12_xl_data_ready_get(&_lsi2dh12_core_ctx, &reg.byte) != 0) 
-    {
-        ESP_LOGE(
-            LIS2DH12TR_LOG_TAG,
-            "Error while obtaining raw data from the device..."
-        );
+    if(lis2dh12_xl_data_ready_get(&_lsi2dh12_core_ctx, &reg.byte) != 0) {
+        ESP_LOGE(LIS2DH12TR_LOG_TAG, "Error while obtaining raw data from the device...");
         return LIS2DH12TR_READING_ERROR;
     }
 
-    if (reg.byte) 
-    {
+    if(reg.byte) {
         memset(data_raw_acceleration, 0x00, 3 * sizeof(int16_t));
         lis2dh12_acceleration_raw_get(&_lsi2dh12_core_ctx, data_raw_acceleration);
-        
+
         acc_output->x_acc = lis2dh12_from_fs8_hr_to_mg(data_raw_acceleration[0]) / 1000.f;
         acc_output->y_acc = lis2dh12_from_fs8_hr_to_mg(data_raw_acceleration[1]) / 1000.f;
         acc_output->z_acc = lis2dh12_from_fs8_hr_to_mg(data_raw_acceleration[2]) / 1000.f;
 
         return LIS2DH12TR_READING_OK;
-    }
-    else 
-    {
-        ESP_LOGE(
-            LIS2DH12TR_LOG_TAG,
-            "Received data was empty"
-        );
+    } else {
+        // ESP_LOGW(LIS2DH12TR_LOG_TAG, "Received data was empty");
         return LIS2DH12TR_READING_EMPTY;
     }
 }
@@ -174,48 +148,33 @@ LIS2DH12TR_reading_status LIS2DH12TR_read_acc(LIS2DH12TR_accelerations *acc_outp
 /*                             PRIVATE FUNCTIONS                               */
 /*******************************************************************************/
 
-int32_t _lsi2dh12_core_write(void *handle, uint8_t Reg, const uint8_t *Bufp, uint16_t len)
-{
-    spi_transaction_t spi_tranaction = {
-        .addr = Reg | 0x60,
-        .tx_buffer = Bufp,
-        .length = 8 * len
-    };
+int32_t _lsi2dh12_core_write(void *handle, uint8_t Reg, const uint8_t *Bufp, uint16_t len) {
+    spi_transaction_t spi_tranaction = { .addr = Reg | 0x60, .tx_buffer = Bufp, .length = 8 * len };
 
-    esp_err_t _err_value = spi_device_polling_transmit(*(spi_device_handle_t*) handle, &spi_tranaction);
+    esp_err_t _err_value = spi_device_polling_transmit(*(spi_device_handle_t *) handle, &spi_tranaction);
 
-    if (_err_value != ESP_OK) {
-        ESP_LOGE(
-            LIS2DH12TR_LOG_TAG, 
-            "SPI transmition failed while writing to a device register, error cause: %s",
-            esp_err_to_name(_err_value)
-        );
+    if(_err_value != ESP_OK) {
+        ESP_LOGE(LIS2DH12TR_LOG_TAG,
+                "SPI transmition failed while writing to a device register, error cause: %s",
+                esp_err_to_name(_err_value));
         return 1;
     }
-    
+
     return 0;
 }
 
-int32_t _lsi2dh12_core_read(void *handle, uint8_t Reg, uint8_t *Bufp, uint16_t len)
-{
-    spi_transaction_t spi_tranaction = {
-        .addr = Reg | 0xC0,
-        .rx_buffer = Bufp,
-        .rxlength = 0,
-        .length = 8 * len
-    };
+int32_t _lsi2dh12_core_read(void *handle, uint8_t Reg, uint8_t *Bufp, uint16_t len) {
+    spi_transaction_t spi_tranaction = { .addr = Reg | 0xC0, .rx_buffer = Bufp, .rxlength = 0, .length = 8 * len };
 
-    esp_err_t _err_value = spi_device_polling_transmit(*(spi_device_handle_t*) handle, &spi_tranaction);
+    esp_err_t _err_value = spi_device_polling_transmit(*(spi_device_handle_t *) handle, &spi_tranaction);
 
-    if (_err_value != ESP_OK) {
-        ESP_LOGE(
-            LIS2DH12TR_LOG_TAG, 
-            "SPI transmition failed while reading from the device register, error cause: %s",
-            esp_err_to_name(_err_value)
-        );
+    if(_err_value != ESP_OK) {
+        ESP_LOGE(LIS2DH12TR_LOG_TAG,
+                "SPI transmition failed while reading from the device register, error cause: %s",
+                esp_err_to_name(_err_value));
         return 1;
     }
-    
+
     return 0;
 }
 
