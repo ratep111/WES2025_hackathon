@@ -57,11 +57,9 @@ esp_err_t pcf8523_get_time(struct tm *time) {
         return ESP_ERR_INVALID_ARG;
     uint8_t reg = PCF8523_REG_SECONDS;
     uint8_t data[7];
-    esp_err_t res = i2c_master_write_read_device(g_port, PCF8523_I2C_ADDR, &reg, 1, data, 7, pdMS_TO_TICKS(1000));
-    if(res != ESP_OK)
-        return res;
-    if(data[0] & PCF8523_SECONDS_OS)
-        return ESP_ERR_INVALID_STATE;
+    ESP_ERROR_CHECK_WITHOUT_ABORT(
+            i2c_master_write_read_device(g_port, PCF8523_I2C_ADDR, &reg, 1, data, 7, pdMS_TO_TICKS(1000)));
+
     time->tm_sec   = bcd2dec(data[0] & 0x7F);
     time->tm_min   = bcd2dec(data[1] & 0x7F);
     time->tm_hour  = bcd2dec(data[2] & 0x3F);

@@ -113,7 +113,7 @@ LIS2DH12TR_init_status LIS2DH12TR_init() {
     // Asigning a specific setup parameters
 
     lis2dh12_block_data_update_set(&_lsi2dh12_core_ctx, PROPERTY_ENABLE);
-    lis2dh12_data_rate_set(&_lsi2dh12_core_ctx, LIS2DH12_ODR_1Hz);
+    lis2dh12_data_rate_set(&_lsi2dh12_core_ctx, LIS2DH12_ODR_100Hz);
     lis2dh12_full_scale_set(&_lsi2dh12_core_ctx, LIS2DH12_8g);
     lis2dh12_operating_mode_set(&_lsi2dh12_core_ctx, LIS2DH12_HR_12bit);
 

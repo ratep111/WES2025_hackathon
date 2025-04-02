@@ -36,7 +36,7 @@
 /*******************************************************************************/
 
 
-static void accelerometer_task(void *args) 
+static void accelerometer_task(void *args);
 static void temp_sens_task(void *args);
 static void rtc_task(void *args);
 static void button_task(void *args);
@@ -103,13 +103,14 @@ void app_main() {
 static void accelerometer_task(void *args) {
     LIS2DH12TR_accelerations acc = { 0 };
 
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    // This delay ensures gui_init is done before calling LIS..._init()
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     LIS2DH12TR_init();
 
     while(1) {
         LIS2DH12TR_read_acc(&acc);
         ESP_LOGI(TAG, "x: %f, y: %f, z: %f", acc.x_acc, acc.y_acc, acc.z_acc);
-        vTaskDelay(pdMS_TO_TICKS(100));
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
 
