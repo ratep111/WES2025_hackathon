@@ -13,6 +13,7 @@
 #include "button.h"
 #include "at24cx_i2c.h"
 #include "joystick.h"
+#include "led.h"
 #include "buzzer.h"
 
 /*******************************************************************************/
@@ -38,6 +39,7 @@ static void button_task(void *args);
 static void eeprom_task(void *args);
 static void joystick_task(void *args);
 static void buzzer_task(void *args);
+static void led_task(void *args);
 
 static void button1_pressed(void *args);
 static void button2_pressed(void *args);
@@ -85,6 +87,7 @@ void app_main() {
     xTaskCreate(eeprom_task, "eeprom_task", 2 * TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(joystick_task, "joystick_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    xTaskCreate(led_task, "led_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
 }
 
 /*******************************************************************************/
@@ -225,6 +228,35 @@ static void buzzer_task(void *args) {
     buzzer_set_duty(0);
 
     vTaskDelete(NULL);
+}
+
+static void led_task(void *args) {
+
+    led_t leds[] = { LED_RED, LED_GREEN, LED_BLUE };
+
+    for(int i = 0; i < LED_COUNT; i++) {
+        if(led_init(leds[i]) != ESP_OK) {
+            ESP_LOGE(TAG, "Failed to initialize LED %d", i);
+            vTaskDelete(NULL);
+        }
+    }
+
+    ESP_LOGI(TAG, "Initalized LEDs!");
+
+    while(1) {
+
+        led_on(LED_RED);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        led_off(LED_RED);
+
+        led_on(LED_GREEN);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        led_off(LED_GREEN);
+
+        led_on(LED_BLUE);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        led_off(LED_BLUE);
+    }
 }
 
 /*******************************************************************************/

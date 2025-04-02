@@ -33,6 +33,7 @@ static const _led_config_t _led_info[LED_COUNT] = {
     { .led = LED_RED, .gpio = 26, .b_is_active_on_high_level = true },
     { .led = LED_GREEN, .gpio = 27, .b_is_active_on_high_level = true },
 };
+
 //------------------------------- GLOBAL DATA ---------------------------------
 
 //------------------------------ PUBLIC FUNCTIONS -----------------------------
