@@ -13,6 +13,7 @@
 #include "button.h"
 #include "at24cx_i2c.h"
 #include "joystick.h"
+#include "buzzer.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -36,6 +37,8 @@ static void rtc_task(void *args);
 static void button_task(void *args);
 static void eeprom_task(void *args);
 static void joystick_task(void *args);
+static void buzzer_task(void *args);
+
 static void button1_pressed(void *args);
 static void button2_pressed(void *args);
 static void button3_pressed(void *args);
@@ -81,6 +84,7 @@ void app_main() {
     xTaskCreate(button_task, "button_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(eeprom_task, "eeprom_task", 2 * TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(joystick_task, "joystick_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
 }
 
 /*******************************************************************************/
@@ -204,6 +208,23 @@ static void joystick_task(void *args) {
         // Position is already logged by the driver if logging is enabled
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
+}
+
+static void buzzer_task(void *args) {
+
+    buzzer_init();
+
+    // This is weird behaviour from LEDC driver. Current fix is to wait some time after initialization
+    // so buzzer won't be triggered twice.
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+
+    buzzer_set_duty(1000);
+
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+
+    buzzer_set_duty(0);
+
+    vTaskDelete(NULL);
 }
 
 /*******************************************************************************/

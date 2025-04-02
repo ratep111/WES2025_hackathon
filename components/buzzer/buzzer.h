@@ -33,8 +33,6 @@ esp_err_t buzzer_init(void);
 /**
  * @brief Set buzzer duty cycle (volume/tone intensity).
  *
- * Thread-safe API using `ledc_set_duty_and_update()`.
- *
  * @param duty Duty cycle (0 to 2^PWM_RESOLUTION).
  * @return ESP_OK on success, or appropriate error code.
  */

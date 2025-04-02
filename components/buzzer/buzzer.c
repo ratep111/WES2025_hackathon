@@ -36,20 +36,25 @@ esp_err_t buzzer_init(void) {
         .duty_resolution                          = PWM_RESOLUTION,
         .freq_hz                                  = PWM_FREQ_HZ,
         .clk_cfg                                  = LEDC_AUTO_CLK };
+
     ESP_ERROR_CHECK(ledc_timer_config(&timer_cfg));
 
     ledc_channel_config_t channel_cfg = { .channel = PWM_CHANNEL,
         .duty                                      = 0,
         .gpio_num                                  = BUZZER_GPIO,
         .speed_mode                                = PWM_MODE,
+        .intr_type                                 = LEDC_INTR_DISABLE,
         .hpoint                                    = 0,
         .timer_sel                                 = PWM_TIMER };
+
     return ledc_channel_config(&channel_cfg);
 }
 
 esp_err_t buzzer_set_duty(uint32_t duty) {
-    // Thread-safe API to set duty, returns esp_err_t val
-    return ledc_set_duty_and_update(PWM_MODE, PWM_CHANNEL, duty, 0);
+
+    ESP_ERROR_CHECK(ledc_set_duty(PWM_MODE, PWM_CHANNEL, duty));
+
+    return ledc_update_duty(PWM_MODE, PWM_CHANNEL);
 }
 
 //---------------------------- PRIVATE FUNCTIONS ------------------------------
