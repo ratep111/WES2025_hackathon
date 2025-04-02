@@ -14,6 +14,7 @@
 #include "at24cx_i2c.h"
 #include "joystick.h"
 #include "buzzer.h"
+#include "esp32_perfmon.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -77,6 +78,7 @@ void app_main() {
     }
 
     gui_init();
+    perfmon_start();
 
     ESP_LOGI(TAG, "Creating temperature sensor task...");
     xTaskCreate(temp_sens_task, "temp_sens_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
