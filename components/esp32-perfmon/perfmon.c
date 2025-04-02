@@ -44,7 +44,6 @@ static void perfmon_task(void *args) {
 
         ESP_LOGI(TAG, "Core 0 at %d%%", cpu0);
         ESP_LOGI(TAG, "Core 1 at %d%%", cpu1);
-        ESP_LOGI(TAG, "maxidlecalls %d", (int) MaxIdleCalls);
         // TODO configurable delay
         vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
