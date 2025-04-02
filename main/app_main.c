@@ -8,6 +8,7 @@
 #include "driver/i2c.h"
 
 #include "gui/gui.h"
+#include "LIS2DH12TR.h"
 #include "sht3x.h"
 #include "pcf8523.h"
 #include "button.h"
@@ -34,6 +35,8 @@
 /*                         PRIVATE FUNCTION PROTOTYPES                         */
 /*******************************************************************************/
 
+
+static void accelerometer_task(void *args) 
 static void temp_sens_task(void *args);
 static void rtc_task(void *args);
 static void button_task(void *args);
@@ -90,11 +93,25 @@ void app_main() {
     xTaskCreate(joystick_task, "joystick_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(led_task, "led_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    xTaskCreate(accelerometer_task, "accelerometer_task", 4096, NULL, 5, NULL);
 }
 
 /*******************************************************************************/
 /*                             PRIVATE FUNCTIONS                               */
 /*******************************************************************************/
+
+static void accelerometer_task(void *args) {
+    LIS2DH12TR_accelerations acc = { 0 };
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    LIS2DH12TR_init();
+
+    while(1) {
+        LIS2DH12TR_read_acc(&acc);
+        ESP_LOGI(TAG, "x: %f, y: %f, z: %f", acc.x_acc, acc.y_acc, acc.z_acc);
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
 
 static void temp_sens_task(void *args) {
     sht3x_sensors_values_t sensor_values = { 0 };
