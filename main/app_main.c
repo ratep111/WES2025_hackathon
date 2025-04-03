@@ -17,6 +17,7 @@
 #include "led.h"
 #include "buzzer.h"
 #include "esp32_perfmon.h"
+#include "wifi_prov.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -72,6 +73,9 @@ static const i2c_config_t _i2c_config = {
 /*                              PUBLIC FUNCTIONS                               */
 /*******************************************************************************/
 void app_main() {
+    ESP_LOGI(TAG, "Starting Wi-Fi provisioning...");
+    ESP_ERROR_CHECK(wifi_provisioning_start());
+
     ESP_LOGI(TAG, "Initializing I2C master...");
     ESP_ERROR_CHECK(i2c_param_config(I2C_MASTER_NUM, &_i2c_config));
     ESP_ERROR_CHECK(
