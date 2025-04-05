@@ -147,10 +147,10 @@ void initailization_task_creator() {
     vTaskDelay(pdMS_TO_TICKS(2000));
 
     // --- Crash detector ---
-    ESP_ERROR_CHECK(crash_detector_init());
-    xTaskCreatePinnedToCore(crash_detector_task, "crash_detector", 4096, NULL, 5, NULL, 0);
+    // ESP_ERROR_CHECK(crash_detector_init());
+    // xTaskCreatePinnedToCore(crash_detector_task, "crash_detector", 4096, NULL, 5, NULL, 0);
     xTaskCreatePinnedToCore(audio_task, "audioTask", 4096, NULL, 5, NULL, 0);
-    xTaskCreatePinnedToCore(speed_estimator_task, "speedEstimator", 4096, NULL, 5, NULL, 0);
+    // xTaskCreatePinnedToCore(speed_estimator_task, "speedEstimator", 4096, NULL, 5, NULL, 0);
     ESP_LOGI(TAG, "All sensor tasks started.");
 }
 

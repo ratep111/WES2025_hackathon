@@ -855,7 +855,6 @@
                   {
                     "nid": 2028233404,
                     "strtype": "BAR/Value",
-                    "integer": 100,
                     "InheritedType": 6
                   },
                   {
@@ -5151,7 +5150,7 @@
                 "strtype": "OBJECT/Size",
                 "intarray": [
                   337,
-                  191
+                  190
                 ],
                 "InheritedType": 7
               },
@@ -5169,7 +5168,7 @@
               {
                 "nid": -1038749250,
                 "strtype": "OBJECT/Hidden",
-                "strval": "False",
+                "strval": "True",
                 "InheritedType": 2
               },
               {
@@ -8090,7 +8089,8 @@
                     "InheritedType": 11
                   }
                 ],
-                "saved_objtypeKey": "PANEL"
+                "saved_objtypeKey": "PANEL",
+                "tree_closed": true
               },
               {
                 "guid": "GUID86022941-983302S46495",
@@ -9072,13 +9072,13 @@
                       {
                         "nid": -1756029399,
                         "strtype": "OBJECT/Clickable",
-                        "strval": "False",
+                        "strval": "True",
                         "InheritedType": 2
                       },
                       {
                         "nid": 1105470314,
                         "strtype": "OBJECT/Checkable",
-                        "strval": "False",
+                        "strval": "True",
                         "InheritedType": 2
                       },
                       {
@@ -10040,7 +10040,7 @@
                   {
                     "nid": -606606188,
                     "strtype": "OBJECT/Hidden",
-                    "strval": "True",
+                    "strval": "False",
                     "InheritedType": 2
                   },
                   {
@@ -15562,6 +15562,7 @@
                       {
                         "nid": 249499725,
                         "strtype": "PLAY ANIMATION/Target",
+                        "strval": "-",
                         "InheritedType": 9
                       },
                       {
@@ -32801,7 +32802,7 @@
     "theme_color2": 0,
     "uiExportFolderPath": "...",
     "projectExportFolderPath": "...",
-    "backup_cnt": 126,
+    "backup_cnt": 129,
     "autosave_cnt": 0,
     "lvgl_version": "8.3.6",
     "callfuncsexport": "C_FILE",
