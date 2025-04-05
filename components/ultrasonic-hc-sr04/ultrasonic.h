@@ -1,5 +1,5 @@
 /**
- * @file hc-sr04.h
+ * @file ultrasonic.h
  *
  * @brief Template header file for an ESP-IDF component.
  */

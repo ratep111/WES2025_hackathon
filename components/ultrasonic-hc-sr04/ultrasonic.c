@@ -1,7 +1,7 @@
 /**
- * @file hc-sr04.c
+ * @file ultrasonic.c
  *
- * ESP-IDF driver for ultrasonic range meters, e.g. HC-SR04, HY-SRF05 and the like
+ * ESP-IDF driver for ultrasonic range meters, e.g. ultrasonic, HY-SRF05 and the like
  *
  * Ported from esp-open-rtos
  *
@@ -11,7 +11,7 @@
  */
 
 //--------------------------------- INCLUDES ----------------------------------
-#include "hc-sr04.h"
+#include "ultrasonic.h"
 //#include <esp_idf_lib_helpers.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
