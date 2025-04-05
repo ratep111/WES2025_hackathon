@@ -30,6 +30,8 @@
 #include "i2cdev.h"
 #include "pcf8574.h"
 
+#include "speaker.h"
+
 /*******************************************************************************/
 /*                                   MACROS                                     */
 /*******************************************************************************/
@@ -151,6 +153,7 @@ void app_main() {
     // --- Initialize UI + perf monitor ---
     gui_init();
     perfmon_start();
+    i2s_dac_init();
 
     vTaskDelay(pdMS_TO_TICKS(1000));
 
@@ -175,6 +178,9 @@ void app_main() {
     // xTaskCreate(speed_estimator_task, "speed_estimator", 4096, NULL, 5, NULL);
 
     vTaskDelay(pdMS_TO_TICKS(2000));
+    xTaskCreate(audio_task, "audio_task", 4096, NULL, 5, NULL);
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
 
     // --- Crash detector ---
     ESP_ERROR_CHECK(crash_detector_init());
