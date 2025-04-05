@@ -15,25 +15,55 @@ extern "C" {
 #include "ui_helpers.h"
 #include "ui_events.h"
 
-void SpinAndLargen_Animation(lv_obj_t * TargetObject, int delay);
-void LargeBtn_Animation(lv_obj_t * TargetObject, int delay);
-void MoveColorToCenter_Animation(lv_obj_t * TargetObject, int delay);
-void MoveSettingsToCenter_Animation(lv_obj_t * TargetObject, int delay);
-void HideBtn_Animation(lv_obj_t * TargetObject, int delay);
-void ShowBtn_Animation(lv_obj_t * TargetObject, int delay);
-// SCREEN: ui_Home_Scr
-void ui_Home_Scr_screen_init(void);
-extern lv_obj_t * ui_Home_Scr;
-extern lv_obj_t * ui_Button1;
-void ui_event_Label1(lv_event_t * e);
-extern lv_obj_t * ui_Label1;
-extern lv_obj_t * ui____initial_actions0;
-
-
-
-
-
-
+void SpinAndLargen_Animation(lv_obj_t *TargetObject, int delay);
+void LargeBtn_Animation(lv_obj_t *TargetObject, int delay);
+void MoveColorToCenter_Animation(lv_obj_t *TargetObject, int delay);
+void MoveSettingsToCenter_Animation(lv_obj_t *TargetObject, int delay);
+void HideBtn_Animation(lv_obj_t *TargetObject, int delay);
+void ShowBtn_Animation(lv_obj_t *TargetObject, int delay);
+// SCREEN: ui_scr1
+void ui_scr1_screen_init(void);
+void ui_event_scr1(lv_event_t *e);
+extern lv_obj_t *ui_scr1;
+extern lv_obj_t *ui_speed_panel;
+extern lv_obj_t *ui_speed_bar;
+extern lv_obj_t *ui_speed_num_lbl;
+extern lv_obj_t *ui_km_h_lbl;
+void ui_event_gesture_panel_1(lv_event_t *e);
+extern lv_obj_t *ui_gesture_panel_1;
+extern lv_obj_t *ui_scrolldots;
+extern lv_obj_t *ui_scrolldot_1;
+extern lv_obj_t *ui_scrolldot_2;
+extern lv_obj_t *ui_scrolldot_3;
+extern lv_obj_t *ui_scrolldot_4;
+extern lv_obj_t *ui_time_lbl;
+extern lv_obj_t *ui_date_lbl;
+void ui_event_gesture_panel_2(lv_event_t *e);
+extern lv_obj_t *ui_gesture_panel_2;
+extern lv_obj_t *ui_scrolldots1;
+extern lv_obj_t *ui_scrolldot_5;
+extern lv_obj_t *ui_scrolldot_6;
+extern lv_obj_t *ui_scrolldot_7;
+extern lv_obj_t *ui_scrolldot_8;
+void ui_event_gesture_panel_3(lv_event_t *e);
+extern lv_obj_t *ui_gesture_panel_3;
+extern lv_obj_t *ui_scrolldots2;
+extern lv_obj_t *ui_scrolldot_9;
+extern lv_obj_t *ui_scrolldot_10;
+extern lv_obj_t *ui_scrolldot_11;
+extern lv_obj_t *ui_scrolldot_12;
+void ui_event_gesture_panel_4(lv_event_t *e);
+extern lv_obj_t *ui_gesture_panel_4;
+extern lv_obj_t *ui_scrolldots3;
+extern lv_obj_t *ui_scrolldot_13;
+extern lv_obj_t *ui_scrolldot_14;
+extern lv_obj_t *ui_scrolldot_15;
+extern lv_obj_t *ui_scrolldot_16;
+extern lv_obj_t *ui_top_panel;
+// SCREEN: ui_scr2
+void ui_scr2_screen_init(void);
+extern lv_obj_t *ui_scr2;
+extern lv_obj_t *ui____initial_actions0;
 
 
 void ui_init(void);

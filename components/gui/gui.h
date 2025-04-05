@@ -15,8 +15,12 @@ extern "C" {
 #endif
 
 //--------------------------------- INCLUDES ----------------------------------
-
+#include <stdint.h>
 //---------------------------------- MACROS -----------------------------------
+#define GUI_SPEED_BUFF_SIZE (4)
+#define GUI_SPEED_LOW       (50)
+#define GUI_SPEED_MID       (100)
+#define GUI_SPEED_HIGH      (120)
 
 //-------------------------------- DATA TYPES ---------------------------------
 
@@ -27,6 +31,13 @@ extern "C" {
  * 
  */
 void gui_init(void);
+
+/**
+ * @brief Sets speed bar object and speed bar label to new value
+ * 
+ * @param new_speed new value for speed
+ */
+void gui_speed_bar_set(int32_t new_speed);
 
 #ifdef __cplusplus
 }
