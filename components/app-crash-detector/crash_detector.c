@@ -98,6 +98,7 @@ esp_err_t crash_detector_init(void) {
 void crash_detector_task(void *pvParameters) {
     LIS2DH12TR_accelerations acc = { 0 };
     float impact_magnitude;
+    LIS2DH12TR_init();
 
     ESP_LOGE(TAG, "Crash detector task started");
 
