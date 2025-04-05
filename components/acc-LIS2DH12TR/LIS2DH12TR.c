@@ -75,6 +75,8 @@ static stmdev_ctx_t _lsi2dh12_core_ctx;
  */
 static spi_device_handle_t _esp_spi_hdev;
 
+static bool isInitialized = false;
+
 /*******************************************************************************/
 /*                                 GLOBAL DATA                                 */
 /*******************************************************************************/
@@ -85,38 +87,42 @@ static spi_device_handle_t _esp_spi_hdev;
 
 LIS2DH12TR_init_status LIS2DH12TR_init() {
 
-    spi_device_interface_config_t spi_device_config = { .clock_speed_hz = LIS2DH12TR_SPI_freqeuncy,
-        .mode                                                           = 0,
-        .spics_io_num                                                   = LIS2DH12TR_SPI_IO_NUM,
-        .queue_size                                                     = LIS2DH12TR_SPI_QUEUE_SIZE,
-        .flags                                                          = 0,
-        .pre_cb                                                         = NULL,
-        .post_cb                                                        = NULL,
-        .address_bits                                                   = 8 };
+    if(isInitialized == false) {
 
-    ESP_ERROR_CHECK(spi_bus_add_device(VSPI_HOST, &spi_device_config, &_esp_spi_hdev));
+        spi_device_interface_config_t spi_device_config = { .clock_speed_hz = LIS2DH12TR_SPI_freqeuncy,
+            .mode                                                           = 0,
+            .spics_io_num                                                   = LIS2DH12TR_SPI_IO_NUM,
+            .queue_size                                                     = LIS2DH12TR_SPI_QUEUE_SIZE,
+            .flags                                                          = 0,
+            .pre_cb                                                         = NULL,
+            .post_cb                                                        = NULL,
+            .address_bits                                                   = 8 };
 
-    _lsi2dh12_core_ctx.write_reg = _lsi2dh12_core_write;
-    _lsi2dh12_core_ctx.read_reg  = _lsi2dh12_core_read;
-    _lsi2dh12_core_ctx.handle    = &_esp_spi_hdev;
+        ESP_ERROR_CHECK(spi_bus_add_device(VSPI_HOST, &spi_device_config, &_esp_spi_hdev));
 
-    uint8_t dev_id;
-    lis2dh12_device_id_get(&_lsi2dh12_core_ctx, &dev_id);
+        _lsi2dh12_core_ctx.write_reg = _lsi2dh12_core_write;
+        _lsi2dh12_core_ctx.read_reg  = _lsi2dh12_core_read;
+        _lsi2dh12_core_ctx.handle    = &_esp_spi_hdev;
 
-    if(dev_id != LIS2DH12_ID) {
-        ESP_LOGE(LIS2DH12TR_LOG_TAG, "Received an unexpected ID from the device");
-        return LIS2DH12TR_ID_MISMATCH;
+        uint8_t dev_id;
+        lis2dh12_device_id_get(&_lsi2dh12_core_ctx, &dev_id);
+
+        if(dev_id != LIS2DH12_ID) {
+            ESP_LOGE(LIS2DH12TR_LOG_TAG, "Received an unexpected ID from the device");
+            return LIS2DH12TR_ID_MISMATCH;
+        }
+
+        ESP_LOGI(LIS2DH12TR_LOG_TAG, "Sensor ID: %hhu\n", dev_id);
+
+        // Asigning a specific setup parameters
+
+        lis2dh12_block_data_update_set(&_lsi2dh12_core_ctx, PROPERTY_ENABLE);
+        lis2dh12_data_rate_set(&_lsi2dh12_core_ctx, LIS2DH12_ODR_100Hz);
+        lis2dh12_full_scale_set(&_lsi2dh12_core_ctx, LIS2DH12_8g);
+        lis2dh12_operating_mode_set(&_lsi2dh12_core_ctx, LIS2DH12_HR_12bit);
+
+        isInitialized = true;
     }
-
-    ESP_LOGI(LIS2DH12TR_LOG_TAG, "Sensor ID: %hhu\n", dev_id);
-
-    // Asigning a specific setup parameters
-
-    lis2dh12_block_data_update_set(&_lsi2dh12_core_ctx, PROPERTY_ENABLE);
-    lis2dh12_data_rate_set(&_lsi2dh12_core_ctx, LIS2DH12_ODR_100Hz);
-    lis2dh12_full_scale_set(&_lsi2dh12_core_ctx, LIS2DH12_8g);
-    lis2dh12_operating_mode_set(&_lsi2dh12_core_ctx, LIS2DH12_HR_12bit);
-
     return LIS2DH12TR_OK;
 }
 
