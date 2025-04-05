@@ -104,7 +104,7 @@ static void update_door_state(door_state_t new_state) {
 
     // Queue event
     door_event_t event = { .state = new_state, .timestamp = (uint32_t) (xTaskGetTickCount() * portTICK_PERIOD_MS) };
-    if(xQueueSend(door_event_queue, &event, 0) != pdTRUE) {
+    if(xQueueSend(door_event_queue, &event, pdMS_TO_TICKS(100)) != pdTRUE) {
         ESP_LOGW(TAG, "Door event queue full");
     }
 

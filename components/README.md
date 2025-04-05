@@ -11,12 +11,12 @@ This directory contains modular components used in the WES2025 Hackathon project
 
 These components contain logic that **processes sensor data**, handles **event detection**, or implements **interactive features** for the user interface.
 
-| Component                         | Description                                                                                           |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `app-day-night-detector`          | Detects ambient light level using VEML7700 to determine day/night state.                              |
-| `app-door-detector`               | Uses a TCRT5000 infrared sensor to detect if a door is open or closed.                                |
-| `app-parking-sensor`              | Measures distance using HC-SR04 and provides audio proximity feedback via buzzer. _(LEDs deprecated)_ |
-| _(planned)_ `app-speed-estimator` | Computes speed from LIS2DH12TR accelerometer and exposes it to GUI.                                   |
+| Component                | Description                                                                                                                |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `app-day-night-detector` | Detects ambient light level using VEML7700 to determine day/night state.                                                   |
+| `app-door-detector`      | Uses a TCRT5000 infrared sensor to detect if a door is open or closed.                                                     |
+| `app-parking-sensor`     | Measures distance using HC-SR04 and provides audio proximity feedback via buzzer. _(LEDs deprecated)_                      |
+| `app-speed-estimator`    | Computes speed and movement direction from LIS2DH12TR accelerometer data. Provides real-time velocity in multiple formats. |
 
 These components often expose **public APIs** to be consumed by the `main` app or the `gui`.
 
@@ -50,13 +50,61 @@ These components provide low-level access to sensors and hardware interfaces. Th
 
 ## 📌 GPIO Pin Mapping
 
-| Peripheral       | Pin Macro                | GPIO | Notes               |
-| ---------------- | ------------------------ | ---- | ------------------- |
-| HC-SR04 Trigger  | `ULTRASONIC_TRIGGER_PIN` | 27   | Shared with `LED_G` |
-| HC-SR04 Echo     | `ULTRASONIC_ECHO_PIN`    | 34   | Shared with `JOY_X` |
-| TCRT5000 Digital | `TCRT5000_DIGITAL_PIN`   | 14   | Shared with `LED_B` |
+| Peripheral       | Pin Macro                | GPIO | Notes                                  |
+| ---------------- | ------------------------ | ---- | -------------------------------------- |
+| HC-SR04 Trigger  | `ULTRASONIC_TRIGGER_PIN` | 27   | Shared with `LED_G`                    |
+| HC-SR04 Echo     | `ULTRASONIC_ECHO_PIN`    | 34   | Shared with `JOY_X`                    |
+| TCRT5000 Digital | `TCRT5000_DIGITAL_PIN`   | 35   | Digital input for door state detection |
 
 > ⚠️ Make sure not to reuse these pins in other components unless explicitly multiplexed.
+
+---
+
+## 🧠 App Component APIs
+
+### Speed Estimator API
+
+| Function                                 | Description                                              |
+| ---------------------------------------- | -------------------------------------------------------- |
+| `speed_estimator_init()`                 | Initialize the accelerometer and speed estimation system |
+| `speed_estimator_get_speed_mps()`        | Get current speed in meters per second                   |
+| `speed_estimator_get_speed_kmh()`        | Get current speed in kilometers per hour                 |
+| `speed_estimator_get_direction()`        | Get enum value of current movement direction             |
+| `speed_estimator_get_direction_string()` | Get human-readable direction (Forward, Backward, etc.)   |
+| `speed_estimator_is_moving_forward()`    | Boolean check if movement is forward                     |
+| `speed_estimator_is_moving_backward()`   | Boolean check if movement is backward                    |
+
+### Parking Sensor API
+
+| Function                        | Description                                                    |
+| ------------------------------- | -------------------------------------------------------------- |
+| `parking_sensor_init()`         | Initialize the ultrasonic sensor and distance detection system |
+| `parking_sensor_get_distance()` | Retrieve current distance measurement in centimeters           |
+| `parking_sensor_is_danger()`    | Check if object is in danger zone (<30cm)                      |
+| `parking_sensor_is_warning()`   | Check if object is in warning zone (30-80cm)                   |
+| `parking_sensor_is_safe()`      | Check if object is in safe zone (>80cm)                        |
+
+### Door Detector API
+
+| Function                   | Description                                                 |
+| -------------------------- | ----------------------------------------------------------- |
+| `door_detector_init()`     | Initialize the IR sensor for door state detection           |
+| `is_door_open()`           | Check if door is currently in open state                    |
+| `is_door_closed()`         | Check if door is currently in closed state                  |
+| `get_door_state()`         | Get current door state enum value                           |
+| `get_door_event()`         | Retrieve door state change events from queue with timestamp |
+| `door_register_callback()` | Register function to be called on door state changes        |
+
+### Day/Night Detector API
+
+| Function                    | Description                                             |
+| --------------------------- | ------------------------------------------------------- |
+| `day_night_init()`          | Initialize the ambient light sensor and state detection |
+| `is_day_mode()`             | Check if current light level indicates day time         |
+| `is_night_mode()`           | Check if current light level indicates night time       |
+| `get_light_level()`         | Retrieve current light level in lux                     |
+| `get_light_state()`         | Get current light state enum value                      |
+| `light_register_callback()` | Register function to be called on light state changes   |
 
 ---
 
