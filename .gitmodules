@@ -10,3 +10,6 @@
 [submodule "components/sht3x-dis/esp32-sht3x"]
 	path = components/sht3x-dis/esp32-sht3x
 	url = https://github.com/ma-lwa-re/esp32-sht3x
+[submodule "esp-cam-module"]
+	path = esp-cam-module
+	url = https://github.com/MrLeafster/esp-cam-module
