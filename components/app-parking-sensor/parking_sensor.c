@@ -12,8 +12,8 @@
 
 static const char *TAG = "PARKING_SENSOR";
 
-#define ULTRASONIC_TRIGGER_PIN GPIO_NUM_27
-#define ULTRASONIC_ECHO_PIN    GPIO_NUM_34
+#define ULTRASONIC_TRIGGER_PIN GPIO_NUM_27 // LED_G 12
+#define ULTRASONIC_ECHO_PIN    GPIO_NUM_34 // JOY_X 6
 
 static ultrasonic_sensor_t sensor = { .trigger_pin = ULTRASONIC_TRIGGER_PIN, .echo_pin = ULTRASONIC_ECHO_PIN };
 

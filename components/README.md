@@ -37,6 +37,7 @@ These components provide low-level access to sensors and hardware interfaces. Th
 | `sht3x-dis`          | I2C driver for SHT3x-DIS temperature and humidity sensors |
 | `joystick`           | Reads analog position of joystick via ADC                 |
 | `led`, `buzzer`      | Simple GPIO/PWM drivers for output devices                |
+| `button`             | GPIO-based button handler with callbacks                  |
 
 ---
 
@@ -47,6 +48,18 @@ These components provide low-level access to sensors and hardware interfaces. Th
 
 ---
 
+## 📌 GPIO Pin Mapping
+
+| Peripheral       | Pin Macro                | GPIO | Notes               |
+| ---------------- | ------------------------ | ---- | ------------------- |
+| HC-SR04 Trigger  | `ULTRASONIC_TRIGGER_PIN` | 27   | Shared with `LED_G` |
+| HC-SR04 Echo     | `ULTRASONIC_ECHO_PIN`    | 34   | Shared with `JOY_X` |
+| TCRT5000 Digital | `TCRT5000_DIGITAL_PIN`   | 14   | Shared with `LED_B` |
+
+> ⚠️ Make sure not to reuse these pins in other components unless explicitly multiplexed.
+
+---
+
 ## 🛠 Utility/Support Components
 
 | Component             | Role                                          |
@@ -54,15 +67,5 @@ These components provide low-level access to sensors and hardware interfaces. Th
 | `esp32-perfmon`       | Performance monitoring wrappers               |
 | `esp_idf_lib_helpers` | Generic ESP-IDF C helpers (I2C, delays, etc.) |
 | `json`                | Likely a wrapper for parsing/generating JSON  |
-| `button`              | GPIO-based button handler with callbacks      |
 
 ---
-
-## 🚧 Notes
-
-- All components follow standard ESP-IDF build system via `idf_component_register(...)` in their respective `CMakeLists.txt` files.
-- Components can be added to other components via `REQUIRES` or `PRIV_REQUIRES` to manage dependencies cleanly.
-
----
-
-## 🗂 Directory Layout Example
