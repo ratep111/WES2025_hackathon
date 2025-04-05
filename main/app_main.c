@@ -17,6 +17,9 @@
 #include "led.h"
 #include "buzzer.h"
 #include "esp32_perfmon.h"
+#include "tcrt5000.h"
+#include "veml7700.h"
+#include "ultrasonic.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -26,6 +29,16 @@
 #define TEMP_TASK_STACK_SIZE 2048
 #define TEMP_TASK_PRIORITY   5
 #define TEMP_READ_DELAY_MS   2000
+
+// TCRT5000 configuration
+#define TCRT5000_DIGITAL_PIN GPIO_NUM_35
+#define TCRT5000_ADC_CHANNEL ADC1_CHANNEL_6
+#define TCRT5000_THRESHOLD   2000 // Threshold in mV
+
+// HC-SR04 configuration
+#define ULTRASONIC_TRIGGER_PIN GPIO_NUM_27
+#define ULTRASONIC_ECHO_PIN    GPIO_NUM_34
+#define MAX_DISTANCE_CM        400 // Maximum distance in cm
 
 /*******************************************************************************/
 /*                                 DATA TYPES                                  */
@@ -44,6 +57,9 @@ static void eeprom_task(void *args);
 static void joystick_task(void *args);
 static void buzzer_task(void *args);
 static void led_task(void *args);
+static void tcrt5000_task(void *arg);
+static void veml7700_task(void *arg);
+static void ultrasonic_task(void *arg);
 
 static void button1_pressed(void *args);
 static void button2_pressed(void *args);
@@ -90,10 +106,15 @@ void app_main() {
     xTaskCreate(rtc_task, "rtc_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(button_task, "button_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(eeprom_task, "eeprom_task", 2 * TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    xTaskCreate(joystick_task, "joystick_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    xTaskCreate(led_task, "led_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    //xTaskCreate(joystick_task, "joystick_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    //xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    //xTaskCreate(led_task, "led_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(accelerometer_task, "accelerometer_task", 4096, NULL, 5, NULL);
+    xTaskCreate(tcrt5000_task, "tcrt5000_task", 4096, NULL, 5, NULL);
+    xTaskCreate(veml7700_task, "veml7700_task", 4096, NULL, 5, NULL);
+    xTaskCreate(ultrasonic_task, "ultrasonic_task", 4096, NULL, 5, NULL);
+
+    ESP_LOGI(TAG, "All sensor tasks started");
 }
 
 /*******************************************************************************/
@@ -276,6 +297,118 @@ static void led_task(void *args) {
         led_on(LED_BLUE);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
         led_off(LED_BLUE);
+    }
+}
+
+static void tcrt5000_task(void *arg) {
+    // Configure TCRT5000 with digital output
+    tcrt5000_config_t digital_config = {
+        .use_digital   = true,
+        .digital_pin   = TCRT5000_DIGITAL_PIN,
+        .invert_output = false // Try inverting this to true if detection logic is reversed
+    };
+
+    tcrt5000_handle_t digital_sensor;
+
+    esp_err_t ret = tcrt5000_init(&digital_config, &digital_sensor);
+    if(ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize TCRT5000 digital sensor: %s", esp_err_to_name(ret));
+        vTaskDelete(NULL);
+    }
+
+    ESP_LOGI(TAG, "TCRT5000 sensors initialized successfully");
+
+    // Add debug to check the actual GPIO level
+    ESP_LOGI(TAG, "Initial GPIO level: %d", gpio_get_level(TCRT5000_DIGITAL_PIN));
+
+    while(1) {
+        // Read digital sensor
+        bool digital_detected;
+        ESP_ERROR_CHECK(tcrt5000_read_digital(&digital_sensor, &digital_detected));
+
+        // Also read raw GPIO level for debugging
+        int gpio_level = gpio_get_level(TCRT5000_DIGITAL_PIN);
+
+        ESP_LOGI(TAG, "TCRT5000: Digital=%s (raw GPIO=%d)", digital_detected ? "Detected" : "Not detected", gpio_level);
+
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }
+}
+/**
+ * @brief Task to handle VEML7700 sensor readings
+ */
+static void veml7700_task(void *arg) {
+    veml7700_handle_t dev;
+
+    esp_err_t ret = veml7700_initialize(&dev, I2C_MASTER_NUM);
+    if(ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize VEML7700 sensor: %s", esp_err_to_name(ret));
+        vTaskDelete(NULL);
+    }
+
+    ESP_LOGI(TAG, "VEML7700 sensor initialized successfully");
+
+    // Allow some time for the sensor to initialize
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+
+    while(1) {
+        double light_lux;
+
+        // Read ambient light with auto scaling
+        ret = veml7700_read_als_lux_auto(dev, &light_lux);
+        if(ret == ESP_OK) {
+            ESP_LOGI(TAG, "VEML7700: Light = %.2f lux", light_lux);
+        } else {
+            ESP_LOGE(TAG, "Failed to read VEML7700 sensor: %s", esp_err_to_name(ret));
+        }
+
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }
+}
+
+static void ultrasonic_task(void *arg) {
+    ultrasonic_sensor_t sensor = { .trigger_pin = ULTRASONIC_TRIGGER_PIN, .echo_pin = ULTRASONIC_ECHO_PIN };
+
+    esp_err_t ret = ultrasonic_init(&sensor);
+    if(ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize HC-SR04 sensor: %s", esp_err_to_name(ret));
+        vTaskDelete(NULL);
+    }
+
+    ESP_LOGI(TAG, "HC-SR04 sensor initialized successfully");
+
+    while(1) {
+        uint32_t distance;
+        uint32_t time_us;
+
+        // Try measuring raw time first
+        ret = ultrasonic_measure_raw(&sensor, MAX_DISTANCE_CM * 58, &time_us);
+        if(ret == ESP_OK) {
+            ESP_LOGI(TAG, "HC-SR04: Raw time = %lu us", time_us);
+        } else {
+            ESP_LOGW(TAG, "Failed to read HC-SR04 raw timing: %s (error code: %d)", esp_err_to_name(ret), ret);
+        }
+
+        vTaskDelay(100 / portTICK_PERIOD_MS); // Longer delay between measurements
+
+        // Then try distance calculation
+        ret = ultrasonic_measure_cm(&sensor, MAX_DISTANCE_CM, &distance);
+        if(ret == ESP_OK) {
+            ESP_LOGI(TAG, "HC-SR04: Distance = %lu cm", distance);
+        } else {
+            ESP_LOGW(TAG, "Failed to read HC-SR04 sensor: %s (error code: %d)", esp_err_to_name(ret), ret);
+
+            // Check for specific errors
+            if(ret == ESP_ERR_ULTRASONIC_PING) {
+                ESP_LOGW(TAG, "Ping error - sensor might be busy or incorrectly connected");
+            } else if(ret == ESP_ERR_ULTRASONIC_PING_TIMEOUT) {
+                ESP_LOGW(TAG, "Ping timeout - no trigger pulse detected");
+            } else if(ret == ESP_ERR_ULTRASONIC_ECHO_TIMEOUT) {
+                ESP_LOGW(TAG, "Echo timeout - no echo received, check connections and obstacles");
+            }
+        }
+
+        vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
 }
 
