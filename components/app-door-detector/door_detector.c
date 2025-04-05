@@ -24,7 +24,7 @@
 
 // Sensor configuration
 static tcrt5000_handle_t sensor;
-static const tcrt5000_config_t config = { .use_digital = true, .digital_pin = TCRT5000_DIGITAL_PIN, .invert_output = false };
+static const tcrt5000_config_t config = { .use_digital = true, .digital_pin = TCRT5000_DIGITAL_PIN, .invert_output = true };
 
 // Internal state
 static EventGroupHandle_t door_event_group       = NULL;
