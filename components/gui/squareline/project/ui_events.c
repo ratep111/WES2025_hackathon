@@ -4,8 +4,8 @@
 // Project name: esp32_gui
 
 #include "ui.h"
+#include <stdio.h>
 
-void btn_clicked(lv_event_t *e)
-{
+void btn_clicked(lv_event_t *e) {
     // Your code here
 }

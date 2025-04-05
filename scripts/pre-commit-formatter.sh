@@ -9,6 +9,8 @@ INCLUDED_DIRS=(
 EXCLUDED_DIRS=(
   "components/lvgl"
   "components/lvgl_esp32_drivers"
+  "components/gui/squareline/project/assets"
+  "components/gui/squareline/project/images"
 )
 
 # Find all staged C/H files in included directories
