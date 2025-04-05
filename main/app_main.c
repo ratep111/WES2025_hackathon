@@ -24,6 +24,7 @@
 #include "parking_sensor.h"
 #include "day_night_detector.h"
 #include "door_detector.h"
+#include "speed_estimator.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -104,6 +105,8 @@ void app_main() {
     gui_init();
     perfmon_start();
 
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+
     ESP_LOGI(TAG, "Creating temperature sensor task...");
     xTaskCreate(temp_sens_task, "temp_sens_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(rtc_task, "rtc_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
@@ -112,11 +115,12 @@ void app_main() {
     //xTaskCreate(joystick_task, "joystick_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     //xTaskCreate(led_task, "led_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    xTaskCreate(accelerometer_task, "accelerometer_task", 4096, NULL, 5, NULL);
+    //xTaskCreate(accelerometer_task, "accelerometer_task", 4096, NULL, 5, NULL);
     // xTaskCreate(tcrt5000_task, "tcrt5000_task", 4096, NULL, 5, NULL);
     // xTaskCreate(veml7700_task, "veml7700_task", 4096, NULL, 5, NULL);
     // xTaskCreate(ultrasonic_task, "ultrasonic_task", 4096, NULL, 5, NULL);
 
+    xTaskCreate(speed_estimator_task, "speed_estimator", 4096, NULL, 5, NULL);
     xTaskCreate(parking_sensor_task, "parking_sensor", 4096, NULL, 5, NULL);
     xTaskCreate(day_night_task, "day_night_sensor", 4096, NULL, 5, NULL);
     xTaskCreate(door_detector_task, "door_detector", 4096, NULL, 5, NULL);
