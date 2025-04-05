@@ -1,102 +1,105 @@
-# WES2025 Hackathon – Embedded Infotainment System
+# 🚨 WES2025 Hackathon – Embedded Infotainment System
 
-This project implements a modular, embedded infotainment and monitoring system for emergency vehicles including ambulances, firetrucks, and police vehicles. The system is designed to interface with various onboard sensors, provide critical feedback to personnel, and display contextual data via a touch-based GUI using LVGL.
-
----
-
-## Features
-
-- Ambient light detection (day/night) for dynamic display adaptation
-- Door open/close detection using IR reflective sensors
-- Real-time acceleration and speed estimation via LIS2DH12TR
-- Parking/distance sensor with audible buzzer feedback
-- Temperature and humidity sensing (SHT3x)
-- Real-time clock (PCF8523) with backup battery support
-- Joystick and button input support
-- LVGL-powered GUI for information and alerts
-- Modular FreeRTOS-based component architecture
+A modular, embedded infotainment and monitoring system designed for **emergency vehicles** such as ambulances, firetrucks, and police units.  
+Built with **ESP-IDF**, **FreeRTOS**, and **LVGL**, this system integrates with onboard sensors to provide real-time feedback, environmental monitoring, and user-friendly interaction through a touch display.
 
 ---
 
-## Getting Started
+## 🚀 Features
 
-Make sure you have ESP-IDF v5.0.2 installed before proceeding.
+- 🌗 **Day/Night Detection** – VEML7700 sensor for automatic display brightness adaptation
+- 🚪 **IR Door Sensor** – TCRT5000 for door open/close detection
+- 🏎️ **Acceleration + Speed Estimation** – Using LIS2DH12TR accelerometer
+- 📏 **Ultrasonic Parking Sensor** – Distance detection with optional buzzer feedback
+- 🌡️ **Temperature + Humidity Monitoring** – Via SHT3x sensor
+- 🕒 **Real-Time Clock (RTC)** – PCF8523 with battery backup support
+- 🎮 **Input Devices** – Joystick and tactile buttons
+- 🖥️ **LVGL GUI** – Real-time info and alerts on a touch-enabled TFT display
+- 🧩 **Modular Architecture** – Clean FreeRTOS components for drivers and logic
 
-### Project Initialization
+---
+
+## 🛠 Getting Started
+
+> Requires **ESP-IDF v5.0.2**
+
+### 🧰 Project Initialization
 
 Clone the repo and run:
 
-    ./project_init.sh
+```bash
+./project_init.sh
+```
 
-This script will:
+This will:
 
 - Initialize Git submodules
 - Set up pre-commit hooks
-- Patch relevant ESP-IDF drivers if needed
-- Check/install clang-format
-- Prepare sdkconfig for the BLDK devkit
+- Patch ESP-IDF drivers (if needed)
+- Check and install `clang-format`
+- Load recommended `sdkconfig` for the BLDK devkit
 
-### Building
+---
 
-    idf.py build
+### 🔨 Build + Flash
+
+To compile the project:
+
+```bash
+idf.py build
+```
 
 To flash and monitor:
 
-    idf.py -p /dev/ttyUSB0 flash monitor
+```bash
+idf.py -p /dev/ttyUSB0 flash monitor
+```
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
-| Directory   | Description                                                |
-| ----------- | ---------------------------------------------------------- |
-| main/       | Main app logic (entry point, task spawning)                |
-| components/ | Drivers and FreeRTOS-compatible app components             |
-| templates/  | Starter templates for new components or apps               |
-| doc/        | Hardware documentation and schematics                      |
-| scripts/    | Dev tools and format hooks (e.g., pre-commit-formatter.sh) |
-| config/     | Project and Kconfig definitions                            |
-
----
-
-## Modular Components
-
-All drivers and logical app features are implemented as standalone components in `components/`.
-
-For a full list of components, their purpose, and GPIO/pin mappings, see:
-components/README.md
+| Directory     | Description                                            |
+| ------------- | ------------------------------------------------------ |
+| `main/`       | Main application entry point, task management          |
+| `components/` | Hardware drivers and modular FreeRTOS-compatible logic |
+| `templates/`  | Base templates for reusable components                 |
+| `doc/`        | Hardware documentation and schematics                  |
+| `scripts/`    | Tooling (e.g., formatter hook, CI helpers)             |
+| `config/`     | Kconfig files and ESP-IDF project configs              |
 
 ---
 
-## Hardware Platform
+## 🧩 Modular Component System
 
-- ESP32 WROVER module
-- Baseboard with:
-  - TCRT5000 IR sensors
+All sensors and logic are implemented as **modular components** in `components/`.
+
+For a full list of available modules, their GPIOs, and capabilities, check:  
+📄 [`components/README.md`](components/README.md)
+
+---
+
+## 🔌 Hardware Platform
+
+- **ESP32 WROVER module**
+- Custom baseboard with:
+  - TCRT5000 IR reflective sensors (door)
   - VEML7700 ambient light sensor
-  - LIS2DH12TR accelerometer (SPI)
-  - HC-SR04 ultrasonic sensor
-  - PCF8523T RTC
-  - SHT3x-DIS temp/humidity sensor
-  - 3x LED + buzzer output
-  - Buttons & joystick input
-  - TFT display (LVGL-ready)
+  - LIS2DH12TR SPI accelerometer
+  - HC-SR04 ultrasonic distance sensor
+  - PCF8523 RTC with CR1220 backup
+  - SHT3x-DIS temperature & humidity sensor
+  - Buzzer + 3x LED indicators
+  - Push buttons and joystick
+  - 2.4" or 3.5" TFT display (LVGL-ready)
 
 ---
 
-## Development Notes
+## 📓 Development Notes
 
-- Built on FreeRTOS using ESP-IDF 5.x style component registration
-- Clean separation between hardware drivers and application logic
-- Designed for clarity, modularity, and real-time responsiveness
-- All sensor tasks are independent and non-blocking
-
----
-
-## Contributing
-
-- Run ./project_init.sh after cloning to set up your environment
-- Use clang-format and respect existing code style
-- All features should be implemented as reusable components when possible
+- Written using **ESP-IDF 5.x** with proper component registration
+- Hardware drivers separated cleanly from app logic
+- Real-time safe and fully non-blocking sensor tasks
+- Components are lightweight, reusable, and testable
 
 ---
