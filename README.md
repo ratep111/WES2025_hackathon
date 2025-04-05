@@ -100,9 +100,3 @@ components/README.md
 - All features should be implemented as reusable components when possible
 
 ---
-
-## License
-
-This repository is part of the WES2025 Hackathon initiative. Licensing is under internal use only unless otherwise stated.
-
----
