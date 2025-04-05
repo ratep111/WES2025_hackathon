@@ -25,10 +25,23 @@
 #include "day_night_detector.h"
 #include "door_detector.h"
 #include "speed_estimator.h"
+#include "crash_detector.h"
+
+#include "i2cdev.h"
+#include "pcf8574.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
 /*******************************************************************************/
+// Required for i2c_dev_t
+
+#define EXPANDER_I2C_ADDR 0x20 // From schematic
+#define I2C_PORT          I2C_NUM_0
+#define SDA_GPIO          GPIO_NUM_22 // Check schematic if different
+#define SCL_GPIO          GPIO_NUM_21
+
+i2c_dev_t expander;
+uint8_t expander_state;
 
 #define TAG                  "MAIN"
 #define TEMP_TASK_STACK_SIZE 2048
@@ -92,41 +105,84 @@ static const i2c_config_t _i2c_config = {
 /*                              PUBLIC FUNCTIONS                               */
 /*******************************************************************************/
 void app_main() {
-    ESP_LOGI(TAG, "Initializing I2C master...");
-    ESP_ERROR_CHECK(i2c_param_config(I2C_MASTER_NUM, &_i2c_config));
-    ESP_ERROR_CHECK(
-            i2c_driver_install(I2C_MASTER_NUM, _i2c_config.mode, I2C_MASTER_RX_BUF_DISABLE, I2C_MASTER_TX_BUF_DISABLE, 0));
+    ESP_LOGI(TAG, "System boot...");
 
+    // --- Init i2cdev mutex system (MUST come before any pcf8574 or other i2cdev use) ---
+    i2cdev_init();
+
+    // --- I2C Master Init ---
+    ESP_LOGI(TAG, "Initializing I2C master...");
+    esp_err_t i2c_ret;
+
+    i2c_ret = i2c_param_config(I2C_MASTER_NUM, &_i2c_config);
+    if(i2c_ret != ESP_OK) {
+        ESP_LOGE(TAG, "I2C param config failed: %s", esp_err_to_name(i2c_ret));
+        return;
+    }
+
+    i2c_ret = i2c_driver_install(I2C_MASTER_NUM, _i2c_config.mode, I2C_MASTER_RX_BUF_DISABLE, I2C_MASTER_TX_BUF_DISABLE, 0);
+    if(i2c_ret != ESP_OK) {
+        ESP_LOGE(TAG, "I2C driver install failed: %s", esp_err_to_name(i2c_ret));
+        return;
+    }
+
+    // --- PCF8574 I/O Expander Init ---
+    esp_err_t err = pcf8574_init_desc(&expander, EXPANDER_I2C_ADDR, I2C_PORT, SDA_GPIO, SCL_GPIO);
+    if(err != ESP_OK) {
+        ESP_LOGE("EXPANDER", "Failed to init PCF8574 descriptor: %s", esp_err_to_name(err));
+        return;
+    }
+
+    expander_state = 0x00;
+    err            = pcf8574_port_write(&expander, expander_state); // Set all I/O expander pins LOW
+    if(err != ESP_OK) {
+        ESP_LOGE("EXPANDER", "Failed to write to PCF8574: %s", esp_err_to_name(err));
+        return;
+    }
+
+    ESP_LOGI("EXPANDER", "PCF8574 initialized and all pins set LOW");
+
+    // --- Start I2C Temperature/Humidity Sensor ---
     if(sht3x_start_periodic_measurement() != ESP_OK) {
         ESP_LOGE(TAG, "Failed to start SHT3x periodic measurement!");
         return;
     }
 
+    // --- Initialize UI + perf monitor ---
     gui_init();
     perfmon_start();
 
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    vTaskDelay(pdMS_TO_TICKS(1000));
 
-    ESP_LOGI(TAG, "Creating temperature sensor task...");
+    // --- Launch core tasks ---
+    ESP_LOGI(TAG, "Launching sensor tasks...");
     xTaskCreate(temp_sens_task, "temp_sens_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(rtc_task, "rtc_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    xTaskCreate(button_task, "button_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(eeprom_task, "eeprom_task", 2 * TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    //xTaskCreate(joystick_task, "joystick_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    //xTaskCreate(led_task, "led_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    //xTaskCreate(accelerometer_task, "accelerometer_task", 4096, NULL, 5, NULL);
-    // xTaskCreate(tcrt5000_task, "tcrt5000_task", 4096, NULL, 5, NULL);
-    // xTaskCreate(veml7700_task, "veml7700_task", 4096, NULL, 5, NULL);
-    // xTaskCreate(ultrasonic_task, "ultrasonic_task", 4096, NULL, 5, NULL);
-
-    xTaskCreate(speed_estimator_task, "speed_estimator", 4096, NULL, 5, NULL);
+    xTaskCreate(accelerometer_task, "accelerometer_task", 4096, NULL, 5, NULL);
     xTaskCreate(parking_sensor_task, "parking_sensor", 4096, NULL, 5, NULL);
     xTaskCreate(day_night_task, "day_night_sensor", 4096, NULL, 5, NULL);
     xTaskCreate(door_detector_task, "door_detector", 4096, NULL, 5, NULL);
 
-    ESP_LOGI(TAG, "All sensor tasks started");
+    // Optional tasks (uncomment if needed)
+    // xTaskCreate(button_task, "button_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    // xTaskCreate(joystick_task, "joystick_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    // xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    // xTaskCreate(led_task, "led_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    // xTaskCreate(tcrt5000_task, "tcrt5000_task", 4096, NULL, 5, NULL);
+    // xTaskCreate(veml7700_task, "veml7700_task", 4096, NULL, 5, NULL);
+    // xTaskCreate(ultrasonic_task, "ultrasonic_task", 4096, NULL, 5, NULL);
+    // xTaskCreate(speed_estimator_task, "speed_estimator", 4096, NULL, 5, NULL);
+
+    vTaskDelay(pdMS_TO_TICKS(2000));
+
+    // --- Crash detector ---
+    ESP_ERROR_CHECK(crash_detector_init());
+    xTaskCreate(crash_detector_task, "crash_detector", 4096, NULL, 5, NULL);
+
+    ESP_LOGI(TAG, "All sensor tasks started.");
 }
+
 
 /*******************************************************************************/
 /*                             PRIVATE FUNCTIONS                               */
@@ -138,12 +194,14 @@ static void accelerometer_task(void *args) {
     // This delay ensures gui_init is done before calling LIS..._init()
     vTaskDelay(1000 / portTICK_PERIOD_MS);
     LIS2DH12TR_init();
+    vTaskDelete(NULL);
 
-    while(1) {
-        LIS2DH12TR_read_acc(&acc);
-        ESP_LOGI(TAG, "x: %f, y: %f, z: %f", acc.x_acc, acc.y_acc, acc.z_acc);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
+
+    // while(1) {
+    //     LIS2DH12TR_read_acc(&acc);
+    //     ESP_LOGI(TAG, "x: %f, y: %f, z: %f", acc.x_acc, acc.y_acc, acc.z_acc);
+    //     vTaskDelay(1000 / portTICK_PERIOD_MS);
+    // }
 }
 
 static void temp_sens_task(void *args) {
@@ -446,8 +504,20 @@ static void veml7700_task(void *arg) {
 
 
 static void button1_pressed(void *args) {
-    ESP_LOGI(TAG, "button 1 pressed");
+    ESP_LOGI(TAG, "button 1 pressed - simulating crash!");
+
+    // // Trigger crash detection manually (for testing)
+    // crash_event_t test_event = {
+    //     .impact_force = 5.0f, // 5g impact
+    //     .timestamp    = 0     // Will be filled by crash_detector
+    // };
+
+    // // Call the crash callback directly
+    // if(crash_callback) {
+    //     crash_callback(&test_event);
+    // }
 }
+
 static void button2_pressed(void *args) {
     ESP_LOGI(TAG, "button 2 pressed");
 }

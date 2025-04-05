@@ -21,6 +21,7 @@ typedef struct {
     adc1_channel_t adc_channel; /*!< ADC channel for analog input */
     uint16_t threshold;         /*!< Threshold value for analog to digital conversion */
     bool invert_output;         /*!< Invert the output (true: detected = 0, false: detected = 1) */
+    bool use_expander;
 } tcrt5000_config_t;
 
 /**
