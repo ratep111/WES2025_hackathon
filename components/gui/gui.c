@@ -126,21 +126,21 @@ void gui_speed_bar_set(int32_t new_speed) {
         // Apply styles to speed panel
         lv_obj_set_style_border_color(ui_speed_panel, border_color, LV_PART_MAIN);
         lv_obj_set_style_border_width(ui_speed_panel, border_width, LV_PART_MAIN);
-        lv_obj_set_style_border_opa(ui_speed_panel, LV_OPA_COVER, LV_PART_MAIN);
+        lv_obj_set_style_border_opa(ui_speed_panel, 80, LV_PART_MAIN);
         lv_obj_set_style_outline_color(ui_speed_panel, border_color, LV_PART_MAIN);
         lv_obj_set_style_outline_width(ui_speed_panel, border_width, LV_PART_MAIN);
-        lv_obj_set_style_outline_opa(ui_speed_panel, LV_OPA_COVER, LV_PART_MAIN);
+        lv_obj_set_style_outline_opa(ui_speed_panel, 80, LV_PART_MAIN);
 
         // Apply style to bar indicator
         lv_obj_set_style_bg_color(ui_speed_bar, border_color, LV_PART_INDICATOR);
-        lv_obj_set_style_bg_opa(ui_speed_bar, LV_OPA_COVER, LV_PART_INDICATOR);
+        lv_obj_set_style_bg_opa(ui_speed_bar, 80, LV_PART_INDICATOR);
 
         lv_obj_set_style_bg_color(ui_top_panel, border_color, LV_PART_MAIN);
 
         // Optional shadow
-        lv_obj_set_style_shadow_width(ui_speed_panel, shadow_width, LV_PART_MAIN);
-        lv_obj_set_style_shadow_color(ui_speed_panel, border_color, LV_PART_MAIN);
-        lv_obj_set_style_shadow_opa(ui_speed_panel, LV_OPA_50, LV_PART_MAIN);
+        // lv_obj_set_style_shadow_width(ui_speed_panel, shadow_width, LV_PART_MAIN);
+        // lv_obj_set_style_shadow_color(ui_speed_panel, border_color, LV_PART_MAIN);
+        // lv_obj_set_style_shadow_opa(ui_speed_panel, LV_OPA_50, LV_PART_MAIN);
     }
 }
 
@@ -156,6 +156,91 @@ void gui_proximity_set(gui_proximity_t prox) {
     }
 }
 
+void gui_time_set(const char *time) {
+    if(ui_time_lbl == NULL || ui_top_time_lbl == NULL) {
+        ESP_LOGE(TAG, "Time labels not initialized!");
+        return;
+    }
+    lv_label_set_text(ui_time_lbl, time);
+    lv_label_set_text(ui_top_time_lbl, time);
+    return;
+}
+
+void gui_date_set(const char *date) {
+    if(ui_date_lbl == NULL || ui_top_date_lbl == NULL) {
+        ESP_LOGE(TAG, "Date labels not initialized!");
+        return;
+    }
+    lv_label_set_text(ui_date_lbl, date);
+    lv_label_set_text(ui_date_lbl, date);
+    return;
+}
+
+void gui_time_convert(char *buffer, int hours, int minutes) {
+    sprintf(buffer, "%2d:%2d", hours, minutes);
+    return;
+}
+
+void gui_weather_set(const char *weather) {
+    if(ui_weather_info_lbl == NULL) {
+        ESP_LOGE(TAG, "Weather label not initialized!");
+        return;
+    }
+    lv_label_set_text(ui_weather_info_lbl, weather);
+    return;
+}
+
+void gui_temp_set(const char *temp) {
+    if(ui_temp_lbl == NULL) {
+        ESP_LOGE(TAG, "Tmperature label not initialized!");
+        return;
+    }
+}
+
+void gui_temp_convert(char *buffer, int temp) {
+    sprintf(buffer, "%d°C", temp);
+    return;
+}
+
+void gui_fuel_percentage_set(int fuel_percentage) {
+    if(ui_fuel_indicator_arc1 == NULL) {
+        ESP_LOGE(TAG, "Fuel indicator arc not initialized!");
+        return;
+    }
+    if(fuel_percentage < 0 || fuel_percentage > 100) {
+        ESP_LOGE(TAG, "Must enter percetage for fual arc!");
+        return;
+    }
+    lv_arc_set_value(ui_fuel_indicator_arc1, fuel_percentage);
+    return;
+}
+
+
+void gui_set_door_open(gui_doors_t door) {
+    if(ui_door_back_left_open_bar == NULL) {
+        ESP_LOGE(TAG, "Door open bars not initialized!");
+        return;
+    }
+    lv_obj_t *doors[] = { ui_door_front_right_open_bar,
+        ui_door_front_left_open_bar,
+        ui_door_back_right_open_bar,
+        ui_door_back_left_open_bar,
+        ui_door_trunk_open_bar };
+    lv_obj_add_flag(doors[door], LV_OBJ_FLAG_HIDDEN);
+}
+
+void gui_set_door_closed(gui_doors_t door) {
+    if(ui_door_back_left_open_bar == NULL) {
+        ESP_LOGE(TAG, "Door open bars not initialized!");
+        return;
+    }
+    lv_obj_t *doors[] = { ui_door_front_right_open_bar,
+        ui_door_front_left_open_bar,
+        ui_door_back_right_open_bar,
+        ui_door_back_left_open_bar,
+        ui_door_trunk_open_bar };
+    lv_obj_clear_flag(doors[door], LV_OBJ_FLAG_HIDDEN);
+}
 
 //---------------------------- PRIVATE FUNCTIONS ------------------------------
 

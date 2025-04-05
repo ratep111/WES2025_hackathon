@@ -45,7 +45,7 @@ extern lv_obj_t *ui_time_lbl;
 extern lv_obj_t *ui_date_lbl;
 extern lv_obj_t *ui_clouds_img;
 extern lv_obj_t *ui_weather_info_lbl;
-extern lv_obj_t *ui_Label9;
+extern lv_obj_t *ui_temp_lbl;
 void ui_event_gesture_panel_2(lv_event_t *e);
 extern lv_obj_t *ui_gesture_panel_2;
 extern lv_obj_t *ui_scrolldots1;
@@ -55,7 +55,12 @@ extern lv_obj_t *ui_scrolldot_7;
 extern lv_obj_t *ui_scrolldot_8;
 extern lv_obj_t *ui_scrolldot_22;
 extern lv_obj_t *ui_content_panel_2;
-extern lv_obj_t *ui_time_lbl1;
+extern lv_obj_t *ui_music_note_img;
+extern lv_obj_t *ui_spotify_lbl;
+extern lv_obj_t *ui_play_music_btn;
+extern lv_obj_t *ui_Image6;
+extern lv_obj_t *ui_previous_btn;
+extern lv_obj_t *ui_forward_btn;
 void ui_event_gesture_panel_3(lv_event_t *e);
 extern lv_obj_t *ui_gesture_panel_3;
 extern lv_obj_t *ui_scrolldots2;
@@ -65,7 +70,6 @@ extern lv_obj_t *ui_scrolldot_11;
 extern lv_obj_t *ui_scrolldot_12;
 extern lv_obj_t *ui_scrolldot_23;
 extern lv_obj_t *ui_content_panel_3;
-extern lv_obj_t *ui_Bar2;
 extern lv_obj_t *ui_prox_panel;
 extern lv_obj_t *ui_green_proxim_arc;
 extern lv_obj_t *ui_orange_proxim_arc;
@@ -80,7 +84,12 @@ extern lv_obj_t *ui_scrolldot_19;
 extern lv_obj_t *ui_scrolldot_20;
 extern lv_obj_t *ui_scrolldot_25;
 extern lv_obj_t *ui_content_panel_5;
-extern lv_obj_t *ui_time_lbl4;
+extern lv_obj_t *ui_car2;
+extern lv_obj_t *ui_door_front_right_open_bar;
+extern lv_obj_t *ui_door_front_left_open_bar;
+extern lv_obj_t *ui_door_back_right_open_bar;
+extern lv_obj_t *ui_door_back_left_open_bar;
+extern lv_obj_t *ui_door_trunk_open_bar;
 void ui_event_gesture_panel_4(lv_event_t *e);
 extern lv_obj_t *ui_gesture_panel_4;
 extern lv_obj_t *ui_scrolldots3;
@@ -90,10 +99,23 @@ extern lv_obj_t *ui_scrolldot_15;
 extern lv_obj_t *ui_scrolldot_16;
 extern lv_obj_t *ui_scrolldot_24;
 extern lv_obj_t *ui_content_panel_4;
-extern lv_obj_t *ui_time_lbl3;
+extern lv_obj_t *ui_navigation_lbl;
 extern lv_obj_t *ui_top_time_lbl;
 extern lv_obj_t *ui_top_date_lbl;
 extern lv_obj_t *ui_top_panel;
+extern lv_obj_t *ui_dummy_arc;
+extern lv_obj_t *ui_fuel_green_arc;
+extern lv_obj_t *ui_fuel_orange_arc;
+extern lv_obj_t *ui_fuel_red_arc;
+extern lv_obj_t *ui_fuel_indicator_arc1;
+extern lv_obj_t *ui_fuel_icon;
+extern lv_obj_t *ui_fuel_max_lbl;
+extern lv_obj_t *ui_temperature_img;
+extern lv_obj_t *ui_top_temp_lbl;
+extern lv_obj_t *ui_humid_img;
+extern lv_obj_t *ui_Label3;
+extern lv_obj_t *ui_setting_btn;
+extern lv_obj_t *ui_settings_img;
 // SCREEN: ui_scr2
 void ui_scr2_screen_init(void);
 extern lv_obj_t *ui_scr2;
@@ -101,7 +123,16 @@ extern lv_obj_t *ui____initial_actions0;
 
 LV_IMG_DECLARE(ui_img_1148992643);               // assets/bg2-min.png
 LV_IMG_DECLARE(ui_img_sun_rays_small_cloud_png); // assets/sun.rays.small.cloud.png
+LV_IMG_DECLARE(ui_img_1040273307);               // assets/music-note(1).png
+LV_IMG_DECLARE(ui_img_play_png);                 // assets/play.png
+LV_IMG_DECLARE(ui_img_backward_png);             // assets/backward.png
+LV_IMG_DECLARE(ui_img_forward_png);              // assets/forward.png
 LV_IMG_DECLARE(ui_img_car2_mini_png);            // assets/car2_mini.png
+LV_IMG_DECLARE(ui_img_474709716);                // assets/icons8-fuel-50.png
+LV_IMG_DECLARE(ui_img_temper_png);               // assets/temper.png
+LV_IMG_DECLARE(ui_img_weather_1_png);            // assets/weather_1.png
+LV_IMG_DECLARE(ui_img_settings_png);             // assets/settings.png
+LV_IMG_DECLARE(ui_img_weather_2_png);            // assets/weather_2.png
 
 
 void ui_init(void);
