@@ -25,6 +25,7 @@
 #include "day_night_detector.h"
 #include "door_detector.h"
 #include "speed_estimator.h"
+#include "crash_detector.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -124,6 +125,10 @@ void app_main() {
     xTaskCreate(parking_sensor_task, "parking_sensor", 4096, NULL, 5, NULL);
     xTaskCreate(day_night_task, "day_night_sensor", 4096, NULL, 5, NULL);
     xTaskCreate(door_detector_task, "door_detector", 4096, NULL, 5, NULL);
+
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
+
+    xTaskCreate(crash_detector_task, "crash_detector", 4096, NULL, 5, NULL);
 
     ESP_LOGI(TAG, "All sensor tasks started");
 }
@@ -446,8 +451,20 @@ static void veml7700_task(void *arg) {
 
 
 static void button1_pressed(void *args) {
-    ESP_LOGI(TAG, "button 1 pressed");
+    ESP_LOGI(TAG, "button 1 pressed - simulating crash!");
+
+    // // Trigger crash detection manually (for testing)
+    // crash_event_t test_event = {
+    //     .impact_force = 5.0f, // 5g impact
+    //     .timestamp    = 0     // Will be filled by crash_detector
+    // };
+
+    // // Call the crash callback directly
+    // if(crash_callback) {
+    //     crash_callback(&test_event);
+    // }
 }
+
 static void button2_pressed(void *args) {
     ESP_LOGI(TAG, "button 2 pressed");
 }
