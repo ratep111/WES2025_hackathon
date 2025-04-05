@@ -65,6 +65,12 @@ extern lv_obj_t *ui_scrolldot_11;
 extern lv_obj_t *ui_scrolldot_12;
 extern lv_obj_t *ui_scrolldot_23;
 extern lv_obj_t *ui_content_panel_3;
+extern lv_obj_t *ui_Bar2;
+extern lv_obj_t *ui_prox_panel;
+extern lv_obj_t *ui_green_proxim_arc;
+extern lv_obj_t *ui_orange_proxim_arc;
+extern lv_obj_t *ui_red_proxim_arc;
+extern lv_obj_t *ui_car;
 void ui_event_gesture_panel_5(lv_event_t *e);
 extern lv_obj_t *ui_gesture_panel_5;
 extern lv_obj_t *ui_scrolldots4;
@@ -95,6 +101,7 @@ extern lv_obj_t *ui____initial_actions0;
 
 LV_IMG_DECLARE(ui_img_1148992643);               // assets/bg2-min.png
 LV_IMG_DECLARE(ui_img_sun_rays_small_cloud_png); // assets/sun.rays.small.cloud.png
+LV_IMG_DECLARE(ui_img_car2_mini_png);            // assets/car2_mini.png
 
 
 void ui_init(void);

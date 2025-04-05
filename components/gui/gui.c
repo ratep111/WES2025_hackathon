@@ -63,8 +63,18 @@ static lv_color_t _get_speed_color(uint32_t speed);
 
 //------------------------- STATIC DATA & CONSTANTS ---------------------------
 static SemaphoreHandle_t p_gui_semaphore;
+static const char *TAG = "GUI";
 
 //------------------------------- GLOBAL DATA ---------------------------------
+static const int _proximity_setup[GUI_PROX_NUM][GUI_PROX_ARC_NUM] = {
+    /* red      orange      green   */
+    { GUI_PROX_FRONT_VAL, GUI_PROX_FRONT_VAL, GUI_PROX_FRONT_VAL }, // GUI_PROX_FRONT_CLOSE
+    { GUI_PROX_NONE_VAL, GUI_PROX_FRONT_VAL, GUI_PROX_FRONT_VAL },  // GUI_PROX_FRONT_MID
+    { GUI_PROX_NONE_VAL, GUI_PROX_NONE_VAL, GUI_PROX_FRONT_VAL },   // GUI_PROX_FRONT_FAR
+    { GUI_PROX_BACK_VAL, GUI_PROX_BACK_VAL, GUI_PROX_BACK_VAL },    // GUI_PROX_BACK_CLOSE
+    { GUI_PROX_NONE_VAL, GUI_PROX_BACK_VAL, GUI_PROX_BACK_VAL },    // GUI_PROX_BACK_MID
+    { GUI_PROX_NONE_VAL, GUI_PROX_NONE_VAL, GUI_PROX_BACK_VAL }     // GUI_PROX_BACK_FAR
+};
 
 //------------------------------ PUBLIC FUNCTIONS -----------------------------
 void gui_init() {
@@ -79,8 +89,10 @@ void gui_init() {
 
 void gui_speed_bar_set(int32_t new_speed) {
 
-    if(ui_speed_bar == NULL)
+    if(ui_speed_bar == NULL) {
+        ESP_LOGE(TAG, "Speed bar not initialized!");
         return;
+    }
     char buffer[GUI_SPEED_BUFF_SIZE];
 
     int speed_low  = GUI_SPEED_LOW;
@@ -129,6 +141,18 @@ void gui_speed_bar_set(int32_t new_speed) {
         lv_obj_set_style_shadow_width(ui_speed_panel, shadow_width, LV_PART_MAIN);
         lv_obj_set_style_shadow_color(ui_speed_panel, border_color, LV_PART_MAIN);
         lv_obj_set_style_shadow_opa(ui_speed_panel, LV_OPA_50, LV_PART_MAIN);
+    }
+}
+
+void gui_proximity_set(gui_proximity_t prox) {
+    if(ui_red_proxim_arc == NULL || ui_green_proxim_arc == NULL || ui_orange_proxim_arc == NULL) {
+        ESP_LOGE(TAG, "Proximity arcs not initialized");
+        return;
+    }
+    lv_obj_t *_proximity_arcs[] = { ui_red_proxim_arc, ui_orange_proxim_arc, ui_green_proxim_arc };
+
+    for(int i = 0; i < GUI_PROX_ARC_NUM; i++) {
+        lv_arc_set_value(_proximity_arcs[i], _proximity_setup[prox][i]);
     }
 }
 
