@@ -10,6 +10,8 @@
 #include "freertos/event_groups.h"
 #include "freertos/queue.h"
 #include "driver/gpio.h"
+#include "pcf8574.h"
+
 
 #define TAG "DOOR_DETECTOR"
 
@@ -17,14 +19,22 @@
 #define DOOR_OPEN_BIT   BIT0
 #define DOOR_CLOSED_BIT BIT1
 
-#define TCRT5000_DIGITAL_PIN GPIO_NUM_14 // LED_B 13
+#define TCRT5000_DIGITAL_PIN 1 // LPCF8574 P1 for emitter power
 
 // Queue size for events
 #define DOOR_EVENT_QUEUE_SIZE 10
 
 // Sensor configuration
 static tcrt5000_handle_t sensor;
-static const tcrt5000_config_t config = { .use_digital = true, .digital_pin = TCRT5000_DIGITAL_PIN, .invert_output = true };
+static const tcrt5000_config_t config = {
+    .use_digital   = true,
+    .digital_pin   = 1,    // P1 on PCF8574 (bit index)
+    .use_expander  = true, // tell driver to read from expander
+    .invert_output = true  // true = LOW means detected
+};
+
+extern i2c_dev_t expander;
+extern uint8_t expander_state;
 
 // Internal state
 static EventGroupHandle_t door_event_group       = NULL;
