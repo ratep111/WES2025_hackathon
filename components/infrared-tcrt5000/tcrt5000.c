@@ -43,7 +43,7 @@ esp_err_t tcrt5000_init(const tcrt5000_config_t *config, tcrt5000_handle_t *hand
         }
 
         // Characterize ADC for more accurate readings
-        esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 0, &handle->adc_chars);
+        // esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 0, &handle->adc_chars);
     }
 
     ESP_LOGI(TAG, "TCRT5000 sensor initialized successfully");
@@ -68,7 +68,7 @@ esp_err_t tcrt5000_read_raw(tcrt5000_handle_t *handle, uint32_t *value) {
         }
 
         // Convert ADC value to voltage in mV
-        *value = esp_adc_cal_raw_to_voltage(adc_raw, &handle->adc_chars);
+        // *value = esp_adc_cal_raw_to_voltage(adc_raw, &handle->adc_chars);
     }
 
     return ESP_OK;

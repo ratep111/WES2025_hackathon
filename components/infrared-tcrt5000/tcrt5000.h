@@ -8,7 +8,7 @@
 #include "esp_err.h"
 #include "driver/gpio.h"
 #include "driver/adc.h"
-#include "esp_adc_cal.h"
+// #include "esp_adc_cal.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -27,8 +27,8 @@ typedef struct {
  * @brief TCRT5000 sensor handle
  */
 typedef struct {
-    tcrt5000_config_t config;                /*!< Sensor configuration */
-    esp_adc_cal_characteristics_t adc_chars; /*!< ADC characteristics for voltage conversion */
+    tcrt5000_config_t config; /*!< Sensor configuration */
+    // esp_adc_cal_characteristics_t adc_chars; /*!< ADC characteristics for voltage conversion */
 } tcrt5000_handle_t;
 
 /**
