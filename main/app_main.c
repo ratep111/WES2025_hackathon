@@ -84,6 +84,7 @@ void app_main() {
 
     gui_init();
     perfmon_start();
+    i2s_dac_init();
 
     ESP_LOGI(TAG, "Creating temperature sensor task...");
     xTaskCreate(temp_sens_task, "temp_sens_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
@@ -93,7 +94,10 @@ void app_main() {
     xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(led_task, "led_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(accelerometer_task, "accelerometer_task", 4096, NULL, 5, NULL);
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
+
     xTaskCreate(audio_task, "audio_task", 4096, NULL, 5, NULL);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
 }
 
 /*******************************************************************************/
