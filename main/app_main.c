@@ -270,6 +270,7 @@ static void gui_test_task(void *args) {
         for(int i = 0; i < 150; i++) {
             gui_speed_bar_set(i);
             vTaskDelay(500 / portTICK_PERIOD_MS);
+            gui_proximity_set(i % GUI_PROX_NUM);
         }
     }
 
