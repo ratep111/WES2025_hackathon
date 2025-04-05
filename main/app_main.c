@@ -21,6 +21,10 @@
 #include "veml7700.h"
 #include "ultrasonic.h"
 
+#include "parking_sensor.h"
+#include "day_night_detector.h"
+#include "door_detector.h"
+
 /*******************************************************************************/
 /*                                   MACROS                                     */
 /*******************************************************************************/
@@ -36,9 +40,9 @@
 #define TCRT5000_THRESHOLD   2000 // Threshold in mV
 
 // HC-SR04 configuration
-#define ULTRASONIC_TRIGGER_PIN GPIO_NUM_27
-#define ULTRASONIC_ECHO_PIN    GPIO_NUM_34
-#define MAX_DISTANCE_CM        400 // Maximum distance in cm
+// #define ULTRASONIC_TRIGGER_PIN GPIO_NUM_27
+// #define ULTRASONIC_ECHO_PIN    GPIO_NUM_26
+// #define MAX_DISTANCE_CM        400 // Maximum distance in cm
 
 /*******************************************************************************/
 /*                                 DATA TYPES                                  */
@@ -47,8 +51,6 @@
 /*******************************************************************************/
 /*                         PRIVATE FUNCTION PROTOTYPES                         */
 /*******************************************************************************/
-
-
 static void accelerometer_task(void *args);
 static void temp_sens_task(void *args);
 static void rtc_task(void *args);
@@ -60,6 +62,7 @@ static void led_task(void *args);
 static void tcrt5000_task(void *arg);
 static void veml7700_task(void *arg);
 static void ultrasonic_task(void *arg);
+// static void ultrasonic_i2c_task(void *arg);
 
 static void button1_pressed(void *args);
 static void button2_pressed(void *args);
@@ -76,7 +79,7 @@ static const i2c_config_t _i2c_config = {
     .sda_io_num       = GPIO_NUM_22,
     .sda_pullup_en    = GPIO_PULLUP_ENABLE,
     .scl_pullup_en    = GPIO_PULLUP_ENABLE,
-    .master.clk_speed = 200000,
+    .master.clk_speed = 50000,
     .clk_flags        = 0,
 };
 
@@ -107,12 +110,16 @@ void app_main() {
     xTaskCreate(button_task, "button_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(eeprom_task, "eeprom_task", 2 * TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     //xTaskCreate(joystick_task, "joystick_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    //xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
+    xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     //xTaskCreate(led_task, "led_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(accelerometer_task, "accelerometer_task", 4096, NULL, 5, NULL);
-    xTaskCreate(tcrt5000_task, "tcrt5000_task", 4096, NULL, 5, NULL);
-    xTaskCreate(veml7700_task, "veml7700_task", 4096, NULL, 5, NULL);
-    xTaskCreate(ultrasonic_task, "ultrasonic_task", 4096, NULL, 5, NULL);
+    // xTaskCreate(tcrt5000_task, "tcrt5000_task", 4096, NULL, 5, NULL);
+    // xTaskCreate(veml7700_task, "veml7700_task", 4096, NULL, 5, NULL);
+    // xTaskCreate(ultrasonic_task, "ultrasonic_task", 4096, NULL, 5, NULL);
+
+    xTaskCreate(parking_sensor_task, "parking_sensor", 4096, NULL, 5, NULL);
+    xTaskCreate(day_night_task, "day_night_sensor", 4096, NULL, 5, NULL);
+    xTaskCreate(door_detector_task, "door_detector", 4096, NULL, 5, NULL);
 
     ESP_LOGI(TAG, "All sensor tasks started");
 }
@@ -262,12 +269,6 @@ static void buzzer_task(void *args) {
     // so buzzer won't be triggered twice.
     vTaskDelay(500 / portTICK_PERIOD_MS);
 
-    buzzer_set_duty(1000);
-
-    vTaskDelay(500 / portTICK_PERIOD_MS);
-
-    buzzer_set_duty(0);
-
     vTaskDelete(NULL);
 }
 
@@ -366,51 +367,74 @@ static void veml7700_task(void *arg) {
     }
 }
 
-static void ultrasonic_task(void *arg) {
-    ultrasonic_sensor_t sensor = { .trigger_pin = ULTRASONIC_TRIGGER_PIN, .echo_pin = ULTRASONIC_ECHO_PIN };
+// static void ultrasonic_i2c_task(void *arg) {
+//     esp_err_t ret = ultrasonic_i2c_init(I2C_MASTER_NUM);
+//     if(ret != ESP_OK) {
+//         ESP_LOGE(TAG, "Failed to initialize HC-SR04 I2C sensor: %s", esp_err_to_name(ret));
+//         vTaskDelete(NULL);
+//     }
 
-    esp_err_t ret = ultrasonic_init(&sensor);
-    if(ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to initialize HC-SR04 sensor: %s", esp_err_to_name(ret));
-        vTaskDelete(NULL);
-    }
+//     ESP_LOGI(TAG, "HC-SR04 I2C sensor initialized successfully");
 
-    ESP_LOGI(TAG, "HC-SR04 sensor initialized successfully");
+//     while(1) {
+//         uint16_t distance = 0;
 
-    while(1) {
-        uint32_t distance;
-        uint32_t time_us;
+//         ret = ultrasonic_i2c_measure_cm(I2C_MASTER_NUM, &distance);
+//         if(ret == ESP_OK) {
+//             ESP_LOGI(TAG, "HC-SR04 I2C: Distance = %u cm", distance);
+//         } else {
+//             ESP_LOGW(TAG, "Failed to read HC-SR04 I2C sensor: %s", esp_err_to_name(ret));
+//         }
 
-        // Try measuring raw time first
-        ret = ultrasonic_measure_raw(&sensor, MAX_DISTANCE_CM * 58, &time_us);
-        if(ret == ESP_OK) {
-            ESP_LOGI(TAG, "HC-SR04: Raw time = %lu us", time_us);
-        } else {
-            ESP_LOGW(TAG, "Failed to read HC-SR04 raw timing: %s (error code: %d)", esp_err_to_name(ret), ret);
-        }
+//         vTaskDelay(1000 / portTICK_PERIOD_MS);
+//     }
+// }
 
-        vTaskDelay(100 / portTICK_PERIOD_MS); // Longer delay between measurements
+// static void ultrasonic_task(void *arg) {
+//     ultrasonic_sensor_t sensor = { .trigger_pin = ULTRASONIC_TRIGGER_PIN, .echo_pin = ULTRASONIC_ECHO_PIN };
 
-        // Then try distance calculation
-        ret = ultrasonic_measure_cm(&sensor, MAX_DISTANCE_CM, &distance);
-        if(ret == ESP_OK) {
-            ESP_LOGI(TAG, "HC-SR04: Distance = %lu cm", distance);
-        } else {
-            ESP_LOGW(TAG, "Failed to read HC-SR04 sensor: %s (error code: %d)", esp_err_to_name(ret), ret);
+//     esp_err_t ret = ultrasonic_init(&sensor);
+//     if(ret != ESP_OK) {
+//         ESP_LOGE(TAG, "Failed to initialize HC-SR04 sensor: %s", esp_err_to_name(ret));
+//         vTaskDelete(NULL);
+//     }
 
-            // Check for specific errors
-            if(ret == ESP_ERR_ULTRASONIC_PING) {
-                ESP_LOGW(TAG, "Ping error - sensor might be busy or incorrectly connected");
-            } else if(ret == ESP_ERR_ULTRASONIC_PING_TIMEOUT) {
-                ESP_LOGW(TAG, "Ping timeout - no trigger pulse detected");
-            } else if(ret == ESP_ERR_ULTRASONIC_ECHO_TIMEOUT) {
-                ESP_LOGW(TAG, "Echo timeout - no echo received, check connections and obstacles");
-            }
-        }
+//     ESP_LOGI(TAG, "HC-SR04 sensor initialized successfully");
 
-        vTaskDelay(3000 / portTICK_PERIOD_MS);
-    }
-}
+//     while(1) {
+//         uint32_t distance;
+//         uint32_t time_us;
+
+//         // Try measuring raw time first
+//         ret = ultrasonic_measure_raw(&sensor, MAX_DISTANCE_CM * 58, &time_us);
+//         if(ret == ESP_OK) {
+//             ESP_LOGI(TAG, "HC-SR04: Raw time = %lu us", time_us);
+//         } else {
+//             ESP_LOGW(TAG, "Failed to read HC-SR04 raw timing: %s (error code: %d)", esp_err_to_name(ret), ret);
+//         }
+
+//         vTaskDelay(100 / portTICK_PERIOD_MS); // Longer delay between measurements
+
+//         // Then try distance calculation
+//         ret = ultrasonic_measure_cm(&sensor, MAX_DISTANCE_CM, &distance);
+//         if(ret == ESP_OK) {
+//             ESP_LOGI(TAG, "HC-SR04: Distance = %lu cm", distance);
+//         } else {
+//             ESP_LOGW(TAG, "Failed to read HC-SR04 sensor: %s (error code: %d)", esp_err_to_name(ret), ret);
+
+//             // Check for specific errors
+//             if(ret == ESP_ERR_ULTRASONIC_PING) {
+//                 ESP_LOGW(TAG, "Ping error - sensor might be busy or incorrectly connected");
+//             } else if(ret == ESP_ERR_ULTRASONIC_PING_TIMEOUT) {
+//                 ESP_LOGW(TAG, "Ping timeout - no trigger pulse detected");
+//             } else if(ret == ESP_ERR_ULTRASONIC_ECHO_TIMEOUT) {
+//                 ESP_LOGW(TAG, "Echo timeout - no echo received, check connections and obstacles");
+//             }
+//         }
+
+//         vTaskDelay(3000 / portTICK_PERIOD_MS);
+//     }
+// }
 
 /*******************************************************************************/
 /*                             INTERRUPT HANDLERS                              */
