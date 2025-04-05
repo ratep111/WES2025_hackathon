@@ -17,7 +17,7 @@
 #define DOOR_OPEN_BIT   BIT0
 #define DOOR_CLOSED_BIT BIT1
 
-#define TCRT5000_DIGITAL_PIN GPIO_NUM_35
+#define TCRT5000_DIGITAL_PIN GPIO_NUM_14 // LED_B 13
 
 // Queue size for events
 #define DOOR_EVENT_QUEUE_SIZE 10
