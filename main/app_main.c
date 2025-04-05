@@ -13,10 +13,11 @@
 #include "pcf8523.h"
 #include "button.h"
 #include "at24cx_i2c.h"
-#include "joystick.h"
+
 #include "led.h"
 #include "buzzer.h"
 #include "esp32_perfmon.h"
+#include "speaker.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -41,7 +42,6 @@ static void temp_sens_task(void *args);
 static void rtc_task(void *args);
 static void button_task(void *args);
 static void eeprom_task(void *args);
-static void joystick_task(void *args);
 static void buzzer_task(void *args);
 static void led_task(void *args);
 
@@ -90,15 +90,16 @@ void app_main() {
     xTaskCreate(rtc_task, "rtc_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(button_task, "button_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(eeprom_task, "eeprom_task", 2 * TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
-    xTaskCreate(joystick_task, "joystick_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(buzzer_task, "buzzer_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(led_task, "led_task", TEMP_TASK_STACK_SIZE, NULL, TEMP_TASK_PRIORITY, NULL);
     xTaskCreate(accelerometer_task, "accelerometer_task", 4096, NULL, 5, NULL);
+    xTaskCreate(audio_task, "audio_task", 4096, NULL, 5, NULL);
 }
 
 /*******************************************************************************/
 /*                             PRIVATE FUNCTIONS                               */
 /*******************************************************************************/
+
 
 static void accelerometer_task(void *args) {
     LIS2DH12TR_accelerations acc = { 0 };
@@ -215,22 +216,6 @@ static void eeprom_task(void *args) {
     }
 
     vTaskDelete(NULL);
-}
-
-static void joystick_task(void *args) {
-    if(joystick_init() != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to initialize joystick");
-        vTaskDelete(NULL);
-    }
-
-    ESP_LOGI(TAG, "Joystick task started");
-
-    while(1) {
-        enum joystick_pos_t pos = joystick_get_position();
-        (void) pos;
-        // Position is already logged by the driver if logging is enabled
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-    }
 }
 
 static void buzzer_task(void *args) {
