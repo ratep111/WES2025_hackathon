@@ -27,6 +27,9 @@ extern "C" {
 #define GUI_PROX_NONE_VAL  (50)
 #define GUI_PROX_BACK_VAL  (100)
 
+#define GUI_FUEL_MAX (60)
+
+
 //-------------------------------- DATA TYPES ---------------------------------
 typedef enum {
     GUI_PROX_FRONT_CLOSE,
@@ -37,6 +40,15 @@ typedef enum {
     GUI_PROX_BACK_FAR,
     GUI_PROX_NUM
 } gui_proximity_t;
+
+typedef enum {
+    front_right,
+    front_left,
+    back_right,
+    back_left,
+    trunk,
+    gui_num_of_doors
+} gui_doors_t;
 //---------------------- PUBLIC FUNCTION PROTOTYPES --------------------------
 
 /**

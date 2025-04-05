@@ -39,7 +39,7 @@ lv_obj_t *ui_time_lbl;
 lv_obj_t *ui_date_lbl;
 lv_obj_t *ui_clouds_img;
 lv_obj_t *ui_weather_info_lbl;
-lv_obj_t *ui_Label9;
+lv_obj_t *ui_temp_lbl;
 void ui_event_gesture_panel_2(lv_event_t *e);
 lv_obj_t *ui_gesture_panel_2;
 lv_obj_t *ui_scrolldots1;
@@ -49,7 +49,12 @@ lv_obj_t *ui_scrolldot_7;
 lv_obj_t *ui_scrolldot_8;
 lv_obj_t *ui_scrolldot_22;
 lv_obj_t *ui_content_panel_2;
-lv_obj_t *ui_time_lbl1;
+lv_obj_t *ui_music_note_img;
+lv_obj_t *ui_spotify_lbl;
+lv_obj_t *ui_play_music_btn;
+lv_obj_t *ui_Image6;
+lv_obj_t *ui_previous_btn;
+lv_obj_t *ui_forward_btn;
 void ui_event_gesture_panel_3(lv_event_t *e);
 lv_obj_t *ui_gesture_panel_3;
 lv_obj_t *ui_scrolldots2;
@@ -59,7 +64,6 @@ lv_obj_t *ui_scrolldot_11;
 lv_obj_t *ui_scrolldot_12;
 lv_obj_t *ui_scrolldot_23;
 lv_obj_t *ui_content_panel_3;
-lv_obj_t *ui_Bar2;
 lv_obj_t *ui_prox_panel;
 lv_obj_t *ui_green_proxim_arc;
 lv_obj_t *ui_orange_proxim_arc;
@@ -74,7 +78,12 @@ lv_obj_t *ui_scrolldot_19;
 lv_obj_t *ui_scrolldot_20;
 lv_obj_t *ui_scrolldot_25;
 lv_obj_t *ui_content_panel_5;
-lv_obj_t *ui_time_lbl4;
+lv_obj_t *ui_car2;
+lv_obj_t *ui_door_front_right_open_bar;
+lv_obj_t *ui_door_front_left_open_bar;
+lv_obj_t *ui_door_back_right_open_bar;
+lv_obj_t *ui_door_back_left_open_bar;
+lv_obj_t *ui_door_trunk_open_bar;
 void ui_event_gesture_panel_4(lv_event_t *e);
 lv_obj_t *ui_gesture_panel_4;
 lv_obj_t *ui_scrolldots3;
@@ -84,16 +93,31 @@ lv_obj_t *ui_scrolldot_15;
 lv_obj_t *ui_scrolldot_16;
 lv_obj_t *ui_scrolldot_24;
 lv_obj_t *ui_content_panel_4;
-lv_obj_t *ui_time_lbl3;
+lv_obj_t *ui_navigation_lbl;
 lv_obj_t *ui_top_time_lbl;
 lv_obj_t *ui_top_date_lbl;
 lv_obj_t *ui_top_panel;
+lv_obj_t *ui_dummy_arc;
+lv_obj_t *ui_fuel_green_arc;
+lv_obj_t *ui_fuel_orange_arc;
+lv_obj_t *ui_fuel_red_arc;
+lv_obj_t *ui_fuel_indicator_arc1;
+lv_obj_t *ui_fuel_icon;
+lv_obj_t *ui_fuel_max_lbl;
+lv_obj_t *ui_temperature_img;
+lv_obj_t *ui_top_temp_lbl;
+lv_obj_t *ui_humid_img;
+lv_obj_t *ui_Label3;
+lv_obj_t *ui_setting_btn;
+lv_obj_t *ui_settings_img;
 
 
 // SCREEN: ui_scr2
 void ui_scr2_screen_init(void);
 lv_obj_t *ui_scr2;
 lv_obj_t *ui____initial_actions0;
+const lv_img_dsc_t *ui_imgset_1734929542[1] = { &ui_img_474709716 };
+const lv_img_dsc_t *ui_imgset_weather_[2]   = { &ui_img_weather_1_png, &ui_img_weather_2_png };
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
@@ -494,7 +518,6 @@ void ui_event_gesture_panel_3(lv_event_t *e) {
         lv_indev_wait_release(lv_indev_get_act());
         _ui_flag_modify(ui_gesture_panel_5, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
         _ui_flag_modify(ui_gesture_panel_3, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
-        up_Animation(ui_content_panel_5, 0);
     }
     if(event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
         lv_indev_wait_release(lv_indev_get_act());

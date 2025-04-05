@@ -8,4 +8,7 @@
 void ui_scr2_screen_init(void) {
     ui_scr2 = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_scr2, LV_OBJ_FLAG_SCROLLABLE); /// Flags
+    lv_obj_set_style_radius(ui_scr2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_scr2, lv_color_hex(0x333333), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_scr2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 }
