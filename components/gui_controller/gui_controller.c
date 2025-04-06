@@ -205,8 +205,7 @@ static void update_proximity_from_parking_sensor(void) {
     } else {
         // No proximity detected - this needs to be handled differently
         // since GUI_PROX_NONE is not a valid value in the enum
-        current_proximity = GUI_PROX_NUM; // Setting to invalid value that will be caught by validation
-        return;                           // Skip setting the event bit for this case
+        current_proximity = GUI_PROX_NOTHING_NEAR; // Setting to invalid value that will be caught by validation
     }
 
     // Only update the GUI if we have a valid proximity value
@@ -293,7 +292,7 @@ static void speed_sensor_task(void *pvParameters) {
 
     while(1) {
         // Get speed from the speed estimator
-        float speed_ms = speed_estimator_get_speed_ms();
+        float speed_ms = speed_estimator_get_speed_mps();
         current_speed  = (int) speed_ms;
 
         // Set the event bit to update the GUI

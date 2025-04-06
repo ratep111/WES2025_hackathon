@@ -30,7 +30,7 @@ static const tcrt5000_config_t config = {
     .use_digital   = true,
     .digital_pin   = 1,    // P1 on PCF8574 (bit index)
     .use_expander  = true, // tell driver to read from expander
-    .invert_output = true  // true = LOW means detected
+    .invert_output = false // true = LOW means detected
 };
 
 extern i2c_dev_t expander;
