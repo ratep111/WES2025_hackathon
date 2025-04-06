@@ -293,8 +293,8 @@ static void speed_sensor_task(void *pvParameters) {
 
     while(1) {
         // Get speed from the speed estimator
-        float speed_kmh = speed_estimator_get_speed_kmh();
-        current_speed   = (int) speed_kmh;
+        float speed_ms = speed_estimator_get_speed_ms();
+        current_speed  = (int) speed_ms;
 
         // Set the event bit to update the GUI
         xEventGroupSetBits(gui_event_group, GUI_EVT_SPEED_UPDATE);
