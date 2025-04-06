@@ -16,6 +16,7 @@ void ShowBtn_Animation(lv_obj_t *TargetObject, int delay);
 void up_Animation(lv_obj_t *TargetObject, int delay);
 void move_up_Animation(lv_obj_t *TargetObject, int delay);
 void move_down_Animation(lv_obj_t *TargetObject, int delay);
+void flashscreen_Animation(lv_obj_t *TargetObject, int delay);
 
 
 // SCREEN: ui_scr1
@@ -37,9 +38,11 @@ lv_obj_t *ui_scrolldot_21;
 lv_obj_t *ui_content_panel_1;
 lv_obj_t *ui_time_lbl;
 lv_obj_t *ui_date_lbl;
-lv_obj_t *ui_clouds_img;
 lv_obj_t *ui_weather_info_lbl;
 lv_obj_t *ui_temp_lbl;
+lv_obj_t *ui_sun_img;
+lv_obj_t *ui_moon;
+lv_obj_t *ui_clouds;
 void ui_event_gesture_panel_2(lv_event_t *e);
 lv_obj_t *ui_gesture_panel_2;
 lv_obj_t *ui_scrolldots1;
@@ -49,7 +52,6 @@ lv_obj_t *ui_scrolldot_7;
 lv_obj_t *ui_scrolldot_8;
 lv_obj_t *ui_scrolldot_22;
 lv_obj_t *ui_content_panel_2;
-lv_obj_t *ui_music_note_img;
 lv_obj_t *ui_spotify_lbl;
 lv_obj_t *ui_play_music_btn;
 lv_obj_t *ui_Image6;
@@ -57,6 +59,7 @@ lv_obj_t *ui_play_music_btn1;
 lv_obj_t *ui_Image20;
 lv_obj_t *ui_play_music_btn2;
 lv_obj_t *ui_Image19;
+lv_obj_t *ui_notes_img;
 void ui_event_gesture_panel_3(lv_event_t *e);
 lv_obj_t *ui_gesture_panel_3;
 lv_obj_t *ui_scrolldots2;
@@ -71,6 +74,7 @@ lv_obj_t *ui_green_proxim_arc;
 lv_obj_t *ui_orange_proxim_arc;
 lv_obj_t *ui_red_proxim_arc;
 lv_obj_t *ui_car;
+lv_obj_t *ui_Label1;
 void ui_event_gesture_panel_5(lv_event_t *e);
 lv_obj_t *ui_gesture_panel_5;
 lv_obj_t *ui_scrolldots4;
@@ -86,6 +90,7 @@ lv_obj_t *ui_door_front_left_open_bar;
 lv_obj_t *ui_door_back_right_open_bar;
 lv_obj_t *ui_door_back_left_open_bar;
 lv_obj_t *ui_door_trunk_open_bar;
+lv_obj_t *ui_door_open_lbl;
 void ui_event_gesture_panel_4(lv_event_t *e);
 lv_obj_t *ui_gesture_panel_4;
 lv_obj_t *ui_scrolldots3;
@@ -95,7 +100,8 @@ lv_obj_t *ui_scrolldot_15;
 lv_obj_t *ui_scrolldot_16;
 lv_obj_t *ui_scrolldot_24;
 lv_obj_t *ui_content_panel_4;
-lv_obj_t *ui_navigation_lbl;
+lv_obj_t *ui_right_turn_img;
+lv_obj_t *ui_turn_distance_lbl;
 lv_obj_t *ui_top_time_lbl;
 lv_obj_t *ui_top_date_lbl;
 lv_obj_t *ui_top_panel;
@@ -116,7 +122,10 @@ lv_obj_t *ui_camera_btn;
 lv_obj_t *ui_camera_img;
 lv_obj_t *ui_setting_btn;
 lv_obj_t *ui_settings_img;
-lv_obj_t *ui_dummy;
+void ui_event_alarm_btn(lv_event_t *e);
+lv_obj_t *ui_alarm_btn;
+lv_obj_t *ui_Image2;
+lv_obj_t *ui_CRASH_img;
 
 
 // SCREEN: ui_scr2
@@ -465,6 +474,27 @@ void move_down_Animation(lv_obj_t *TargetObject, int delay) {
     lv_anim_set_get_value_cb(&PropertyAnimation_0, &_ui_anim_callback_get_y);
     lv_anim_start(&PropertyAnimation_0);
 }
+void flashscreen_Animation(lv_obj_t *TargetObject, int delay) {
+    ui_anim_user_data_t *PropertyAnimation_0_user_data = lv_mem_alloc(sizeof(ui_anim_user_data_t));
+    PropertyAnimation_0_user_data->target              = TargetObject;
+    PropertyAnimation_0_user_data->val                 = -1;
+    lv_anim_t PropertyAnimation_0;
+    lv_anim_init(&PropertyAnimation_0);
+    lv_anim_set_time(&PropertyAnimation_0, 1000);
+    lv_anim_set_user_data(&PropertyAnimation_0, PropertyAnimation_0_user_data);
+    lv_anim_set_custom_exec_cb(&PropertyAnimation_0, _ui_anim_callback_set_opacity);
+    lv_anim_set_values(&PropertyAnimation_0, 0, 255);
+    lv_anim_set_path_cb(&PropertyAnimation_0, lv_anim_path_linear);
+    lv_anim_set_delay(&PropertyAnimation_0, delay + 0);
+    lv_anim_set_deleted_cb(&PropertyAnimation_0, _ui_anim_callback_free_user_data);
+    lv_anim_set_playback_time(&PropertyAnimation_0, 0);
+    lv_anim_set_playback_delay(&PropertyAnimation_0, 0);
+    lv_anim_set_repeat_count(&PropertyAnimation_0, 0);
+    lv_anim_set_repeat_delay(&PropertyAnimation_0, 0);
+    lv_anim_set_early_apply(&PropertyAnimation_0, false);
+    lv_anim_set_get_value_cb(&PropertyAnimation_0, &_ui_anim_callback_get_opacity);
+    lv_anim_start(&PropertyAnimation_0);
+}
 
 ///////////////////// FUNCTIONS ////////////////////
 void ui_event_scr1(lv_event_t *e) {
@@ -574,6 +604,17 @@ void ui_event_camera_btn(lv_event_t *e) {
     lv_obj_t *target           = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         ui_camera_btn_pressed(e);
+        flashscreen_Animation(ui_scr1, 0);
+    }
+}
+void ui_event_alarm_btn(lv_event_t *e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t *target           = lv_event_get_target(e);
+    if(event_code == LV_EVENT_VALUE_CHANGED && lv_obj_has_state(target, LV_STATE_CHECKED)) {
+        ui_alarm_on(e);
+    }
+    if(event_code == LV_EVENT_VALUE_CHANGED && !lv_obj_has_state(target, LV_STATE_CHECKED)) {
+        ui_alarm_off(e);
     }
 }
 

@@ -24,6 +24,7 @@ void ShowBtn_Animation(lv_obj_t *TargetObject, int delay);
 void up_Animation(lv_obj_t *TargetObject, int delay);
 void move_up_Animation(lv_obj_t *TargetObject, int delay);
 void move_down_Animation(lv_obj_t *TargetObject, int delay);
+void flashscreen_Animation(lv_obj_t *TargetObject, int delay);
 // SCREEN: ui_scr1
 void ui_scr1_screen_init(void);
 void ui_event_scr1(lv_event_t *e);
@@ -43,9 +44,11 @@ extern lv_obj_t *ui_scrolldot_21;
 extern lv_obj_t *ui_content_panel_1;
 extern lv_obj_t *ui_time_lbl;
 extern lv_obj_t *ui_date_lbl;
-extern lv_obj_t *ui_clouds_img;
 extern lv_obj_t *ui_weather_info_lbl;
 extern lv_obj_t *ui_temp_lbl;
+extern lv_obj_t *ui_sun_img;
+extern lv_obj_t *ui_moon;
+extern lv_obj_t *ui_clouds;
 void ui_event_gesture_panel_2(lv_event_t *e);
 extern lv_obj_t *ui_gesture_panel_2;
 extern lv_obj_t *ui_scrolldots1;
@@ -55,7 +58,6 @@ extern lv_obj_t *ui_scrolldot_7;
 extern lv_obj_t *ui_scrolldot_8;
 extern lv_obj_t *ui_scrolldot_22;
 extern lv_obj_t *ui_content_panel_2;
-extern lv_obj_t *ui_music_note_img;
 extern lv_obj_t *ui_spotify_lbl;
 extern lv_obj_t *ui_play_music_btn;
 extern lv_obj_t *ui_Image6;
@@ -63,6 +65,7 @@ extern lv_obj_t *ui_play_music_btn1;
 extern lv_obj_t *ui_Image20;
 extern lv_obj_t *ui_play_music_btn2;
 extern lv_obj_t *ui_Image19;
+extern lv_obj_t *ui_notes_img;
 void ui_event_gesture_panel_3(lv_event_t *e);
 extern lv_obj_t *ui_gesture_panel_3;
 extern lv_obj_t *ui_scrolldots2;
@@ -77,6 +80,7 @@ extern lv_obj_t *ui_green_proxim_arc;
 extern lv_obj_t *ui_orange_proxim_arc;
 extern lv_obj_t *ui_red_proxim_arc;
 extern lv_obj_t *ui_car;
+extern lv_obj_t *ui_Label1;
 void ui_event_gesture_panel_5(lv_event_t *e);
 extern lv_obj_t *ui_gesture_panel_5;
 extern lv_obj_t *ui_scrolldots4;
@@ -92,6 +96,7 @@ extern lv_obj_t *ui_door_front_left_open_bar;
 extern lv_obj_t *ui_door_back_right_open_bar;
 extern lv_obj_t *ui_door_back_left_open_bar;
 extern lv_obj_t *ui_door_trunk_open_bar;
+extern lv_obj_t *ui_door_open_lbl;
 void ui_event_gesture_panel_4(lv_event_t *e);
 extern lv_obj_t *ui_gesture_panel_4;
 extern lv_obj_t *ui_scrolldots3;
@@ -101,7 +106,8 @@ extern lv_obj_t *ui_scrolldot_15;
 extern lv_obj_t *ui_scrolldot_16;
 extern lv_obj_t *ui_scrolldot_24;
 extern lv_obj_t *ui_content_panel_4;
-extern lv_obj_t *ui_navigation_lbl;
+extern lv_obj_t *ui_right_turn_img;
+extern lv_obj_t *ui_turn_distance_lbl;
 extern lv_obj_t *ui_top_time_lbl;
 extern lv_obj_t *ui_top_date_lbl;
 extern lv_obj_t *ui_top_panel;
@@ -122,25 +128,32 @@ extern lv_obj_t *ui_camera_btn;
 extern lv_obj_t *ui_camera_img;
 extern lv_obj_t *ui_setting_btn;
 extern lv_obj_t *ui_settings_img;
-extern lv_obj_t *ui_dummy;
+void ui_event_alarm_btn(lv_event_t *e);
+extern lv_obj_t *ui_alarm_btn;
+extern lv_obj_t *ui_Image2;
+extern lv_obj_t *ui_CRASH_img;
 // SCREEN: ui_scr2
 void ui_scr2_screen_init(void);
 extern lv_obj_t *ui_scr2;
 extern lv_obj_t *ui____initial_actions0;
 
-LV_IMG_DECLARE(ui_img_1148992643);               // assets/bg2-min.png
-LV_IMG_DECLARE(ui_img_sun_rays_small_cloud_png); // assets/sun.rays.small.cloud.png
-LV_IMG_DECLARE(ui_img_1040273307);               // assets/music-note(1).png
-LV_IMG_DECLARE(ui_img_play_png);                 // assets/play.png
-LV_IMG_DECLARE(ui_img_forward_png);              // assets/forward.png
-LV_IMG_DECLARE(ui_img_backward_png);             // assets/backward.png
-LV_IMG_DECLARE(ui_img_car2_mini_png);            // assets/car2_mini.png
-LV_IMG_DECLARE(ui_img_474709716);                // assets/icons8-fuel-50.png
-LV_IMG_DECLARE(ui_img_temper_png);               // assets/temper.png
-LV_IMG_DECLARE(ui_img_weather_1_png);            // assets/weather_1.png
-LV_IMG_DECLARE(ui_img_360038530);                // assets/icons8-camera-64.png
-LV_IMG_DECLARE(ui_img_settings_png);             // assets/settings.png
-LV_IMG_DECLARE(ui_img_weather_2_png);            // assets/weather_2.png
+LV_IMG_DECLARE(ui_img_1148992643);    // assets/bg2-min.png
+LV_IMG_DECLARE(ui_img_sun_png);       // assets/sun.png
+LV_IMG_DECLARE(ui_img_497089268);     // assets/full-moon.png
+LV_IMG_DECLARE(ui_img_clouds_png);    // assets/clouds.png
+LV_IMG_DECLARE(ui_img_play_png);      // assets/play.png
+LV_IMG_DECLARE(ui_img_forward_png);   // assets/forward.png
+LV_IMG_DECLARE(ui_img_backward_png);  // assets/backward.png
+LV_IMG_DECLARE(ui_img_1040270234);    // assets/music-note(2).png
+LV_IMG_DECLARE(ui_img_car2_mini_png); // assets/car2_mini.png
+LV_IMG_DECLARE(ui_img_1381129023);    // assets/right-turn(1).png
+LV_IMG_DECLARE(ui_img_474709716);     // assets/icons8-fuel-50.png
+LV_IMG_DECLARE(ui_img_temper_png);    // assets/temper.png
+LV_IMG_DECLARE(ui_img_weather_1_png); // assets/weather_1.png
+LV_IMG_DECLARE(ui_img_360038530);     // assets/icons8-camera-64.png
+LV_IMG_DECLARE(ui_img_settings_png);  // assets/settings.png
+LV_IMG_DECLARE(ui_img_220525951);     // assets/output-onlinepngtools-min.png
+LV_IMG_DECLARE(ui_img_weather_2_png); // assets/weather_2.png
 
 
 void ui_init(void);

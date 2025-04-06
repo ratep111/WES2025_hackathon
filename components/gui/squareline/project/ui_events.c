@@ -13,3 +13,11 @@ void btn_clicked(lv_event_t *e) {
 void ui_camera_btn_pressed(lv_event_t *e) {
     // Your code here
 }
+
+void ui_alarm_on(lv_event_t *e) {
+    // Your code here
+}
+
+void ui_alarm_off(lv_event_t *e) {
+    // Your code here
+}
