@@ -125,6 +125,20 @@ void initialization_peripheral_creator() {
 
     ESP_LOGI("EXPANDER", "PCF8574 initialized and all pins set LOW");
 
+    // --- Start I2C Temperature/Humidity Sensor ---
+    if(sht3x_start_periodic_measurement() != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to start SHT3x periodic measurement!");
+        return;
+    }
+
+    // --- Initialize UI + perf monitor ---
+    gui_init();
+    perfmon_start();
+    i2s_dac_init();
+
+    vTaskDelay(pdMS_TO_TICKS(2000));
+
+
     // Initialize accelerometer data provider
     esp_err_t ret = acc_data_provider_init();
     if(ret != ESP_OK) {
@@ -141,16 +155,6 @@ void initialization_peripheral_creator() {
 
     ESP_LOGI(TAG, "Accelerometer data provider started successfully");
 
-    // --- Start I2C Temperature/Humidity Sensor ---
-    if(sht3x_start_periodic_measurement() != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to start SHT3x periodic measurement!");
-        return;
-    }
-
-    // --- Initialize UI + perf monitor ---
-    gui_init();
-    perfmon_start();
-    i2s_dac_init();
 
     vTaskDelay(pdMS_TO_TICKS(1000));
 }
