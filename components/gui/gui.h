@@ -196,6 +196,12 @@ void gui_set_day(void);
  */
 void gui_set_night(void);
 
+/**
+ * @brief CRASH
+ * 
+ */
+void gui_crash(void);
+
 
 #ifdef __cplusplus
 }
