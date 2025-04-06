@@ -46,7 +46,7 @@ static EventGroupHandle_t gui_event_group      = NULL;
 #define GUI_EVT_FUEL_UPDATE      BIT7
 
 // Current state storage
-static int current_speed                            = 0;
+static float current_speed                          = 0;
 static gui_proximity_t current_proximity            = GUI_PROX_NUM; // Default to invalid value, will be set correctly
 static sht3x_sensors_values_t current_temp_humidity = { 0 };
 static light_state_t current_light_state            = LIGHT_STATE_UNKNOWN;
@@ -81,7 +81,7 @@ static void gui_controller_task(void *pvParameters) {
         if(events & GUI_EVT_SPEED_UPDATE) {
             gui_speed_bar_set(current_speed);
             xEventGroupClearBits(gui_event_group, GUI_EVT_SPEED_UPDATE);
-            ESP_LOGE(TAG, "Updated speed: %d", current_speed);
+            ESP_LOGI(TAG, "Updated speed: %.2f", current_speed);
         }
 
         // Handle proximity updates
@@ -292,8 +292,8 @@ static void speed_sensor_task(void *pvParameters) {
 
     while(1) {
         // Get speed from the speed estimator
-        float speed_ms = speed_estimator_get_speed_mps();
-        current_speed  = (int) speed_ms;
+        float speed_kmh = speed_estimator_get_speed_kmh();
+        current_speed   = speed_kmh;
 
         // Set the event bit to update the GUI
         xEventGroupSetBits(gui_event_group, GUI_EVT_SPEED_UPDATE);

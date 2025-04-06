@@ -109,7 +109,7 @@ void speed_estimator_task(void *args) {
                 }
             }
 
-            ESP_LOGI(TAG,
+            ESP_LOGD(TAG,
                     "Speed: %.2f m/s (%.2f km/h), Direction: %s",
                     current_speed,
                     current_speed * 3.6f,
