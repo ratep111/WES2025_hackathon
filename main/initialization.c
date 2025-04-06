@@ -30,7 +30,7 @@
 #include "i2cdev.h"
 #include "pcf8574.h"
 #include "speaker.h"
-
+#include "my_mqtt.h"
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -87,6 +87,7 @@ static const i2c_config_t _i2c_config = {
 void initialization_peripheral_creator() {
     ESP_LOGI(TAG, "System boot...");
 
+
     // --- Init i2cdev mutex system (MUST come before any pcf8574 or other i2cdev use) ---
     i2cdev_init();
 
@@ -128,6 +129,8 @@ void initialization_peripheral_creator() {
         return;
     }
 
+    ESP_ERROR_CHECK(mqtt_client_init());
+
     // --- Initialize UI + perf monitor ---
     gui_init();
     perfmon_start();
@@ -140,6 +143,7 @@ void initailization_task_creator() {
 
     ESP_LOGI(TAG, "Launching sensor tasks...");
 
+
     xTaskCreatePinnedToCore(parking_sensor_task, "parking_sensor", 4096, NULL, 5, NULL, 0);
     xTaskCreatePinnedToCore(day_night_task, "day_night_sensor", 4096, NULL, 5, NULL, 0);
     xTaskCreatePinnedToCore(door_detector_task, "door_detector", 4096, NULL, 5, NULL, 0);
@@ -151,6 +155,7 @@ void initailization_task_creator() {
     // xTaskCreatePinnedToCore(crash_detector_task, "crash_detector", 4096, NULL, 5, NULL, 0);
     xTaskCreatePinnedToCore(audio_task, "audioTask", 4096, NULL, 5, NULL, 0);
     // xTaskCreatePinnedToCore(speed_estimator_task, "speedEstimator", 4096, NULL, 5, NULL, 0);
+
     ESP_LOGI(TAG, "All sensor tasks started.");
 }
 
