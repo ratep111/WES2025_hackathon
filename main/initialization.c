@@ -30,6 +30,7 @@
 #include "i2cdev.h"
 #include "pcf8574.h"
 #include "speaker.h"
+#include "gui_controller.h"
 
 
 /*******************************************************************************/
@@ -153,6 +154,25 @@ void initailization_task_creator() {
     // xTaskCreatePinnedToCore(speed_estimator_task, "speedEstimator", 4096, NULL, 5, NULL, 0);
     ESP_LOGI(TAG, "All sensor tasks started.");
 }
+
+/**
+ * @brief Initialize GUI controller that connects sensors to GUI
+ * 
+ * This function should be called after peripheral and task initialization
+ */
+void initialization_gui_controller() {
+    ESP_LOGI(TAG, "Initializing GUI controller...");
+
+    // Initialize the controller module
+    esp_err_t ret = gui_controller_init();
+    if(ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize GUI controller: %s", esp_err_to_name(ret));
+        return;
+    }
+
+    ESP_LOGI(TAG, "GUI controller initialized successfully");
+}
+
 
 /*******************************************************************************/
 /*                             PRIVATE FUNCTIONS                               */

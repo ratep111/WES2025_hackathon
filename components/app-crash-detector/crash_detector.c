@@ -52,7 +52,6 @@ static void format_timestamp(time_t ts, char *buf, size_t size) {
             timeinfo.tm_sec);
 }
 
-// === NEW: PCF8574 GPIO helper ===
 static void pcf8574_set_pin(uint8_t pin, bool high) {
     if(high)
         expander_state |= (1 << pin); // release line (idle)
