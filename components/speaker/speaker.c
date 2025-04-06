@@ -15,6 +15,7 @@
 // Queue for buffer management
 static QueueHandle_t i2s_event_queue;
 
+
 void i2s_dac_init() {
     i2s_config_t i2s_config = {
         .mode                 = I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_DAC_BUILT_IN,
@@ -66,8 +67,12 @@ void audio_task(void *arg) {
     // Initial buffer fill
     i2s_write(I2S_PORT, audio_data, audio_len > 4096 ? 4096 : audio_len, &bytes_written, portMAX_DELAY);
     current_pos += bytes_written;
+    //while(1) {
 
+    //ulTaskNotifyTake(true, portMAX_DELAY);
     while(1) {
+
+
         i2s_event_t event;
         if(xQueueReceive(i2s_event_queue, &event, portMAX_DELAY)) {
             if(event.type == I2S_EVENT_TX_DONE) {
@@ -86,6 +91,9 @@ void audio_task(void *arg) {
                 }
             }
         }
+        //     if(ulTaskNotifyTake(true, 0) != 0)
+        //         break;
+        // }
     }
 
     // This code will never be reached, but good practice to include

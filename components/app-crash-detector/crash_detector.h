@@ -10,8 +10,8 @@
 #include <time.h>
 
 /** @brief Impact threshold in g-forces */
-#define CRASH_ACCEL_THRESHOLD  0.1f // Default: 4g force
-#define CRASH_RESET_TIMEOUT_MS 5000 // Auto reset crash state after 5 seconds
+#define CRASH_ACCEL_THRESHOLD  0.02f // Default: 4g force
+#define CRASH_RESET_TIMEOUT_MS 5000  // Auto reset crash state after 5 seconds
 
 /**
  * @brief Crash event data structure

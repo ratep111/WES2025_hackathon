@@ -29,6 +29,7 @@ void flashscreen_Animation(lv_obj_t *TargetObject, int delay);
 void ui_scr1_screen_init(void);
 void ui_event_scr1(lv_event_t *e);
 extern lv_obj_t *ui_scr1;
+extern lv_obj_t *ui_CRASH_img;
 extern lv_obj_t *ui_speed_panel;
 extern lv_obj_t *ui_speed_bar;
 extern lv_obj_t *ui_speed_num_lbl;
@@ -128,16 +129,16 @@ extern lv_obj_t *ui_camera_btn;
 extern lv_obj_t *ui_camera_img;
 extern lv_obj_t *ui_setting_btn;
 extern lv_obj_t *ui_settings_img;
-void ui_event_alarm_btn(lv_event_t *e);
-extern lv_obj_t *ui_alarm_btn;
-extern lv_obj_t *ui_Image2;
-extern lv_obj_t *ui_CRASH_img;
+void ui_event_siren_btn(lv_event_t *e);
+extern lv_obj_t *ui_siren_btn;
+extern lv_obj_t *ui_play_siren_btn;
 // SCREEN: ui_scr2
 void ui_scr2_screen_init(void);
 extern lv_obj_t *ui_scr2;
 extern lv_obj_t *ui____initial_actions0;
 
 LV_IMG_DECLARE(ui_img_1148992643);    // assets/bg2-min.png
+LV_IMG_DECLARE(ui_img_220525951);     // assets/output-onlinepngtools-min.png
 LV_IMG_DECLARE(ui_img_sun_png);       // assets/sun.png
 LV_IMG_DECLARE(ui_img_497089268);     // assets/full-moon.png
 LV_IMG_DECLARE(ui_img_clouds_png);    // assets/clouds.png
@@ -152,7 +153,6 @@ LV_IMG_DECLARE(ui_img_temper_png);    // assets/temper.png
 LV_IMG_DECLARE(ui_img_weather_1_png); // assets/weather_1.png
 LV_IMG_DECLARE(ui_img_360038530);     // assets/icons8-camera-64.png
 LV_IMG_DECLARE(ui_img_settings_png);  // assets/settings.png
-LV_IMG_DECLARE(ui_img_220525951);     // assets/output-onlinepngtools-min.png
 LV_IMG_DECLARE(ui_img_weather_2_png); // assets/weather_2.png
 
 

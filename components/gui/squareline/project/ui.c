@@ -23,6 +23,7 @@ void flashscreen_Animation(lv_obj_t *TargetObject, int delay);
 void ui_scr1_screen_init(void);
 void ui_event_scr1(lv_event_t *e);
 lv_obj_t *ui_scr1;
+lv_obj_t *ui_CRASH_img;
 lv_obj_t *ui_speed_panel;
 lv_obj_t *ui_speed_bar;
 lv_obj_t *ui_speed_num_lbl;
@@ -122,10 +123,9 @@ lv_obj_t *ui_camera_btn;
 lv_obj_t *ui_camera_img;
 lv_obj_t *ui_setting_btn;
 lv_obj_t *ui_settings_img;
-void ui_event_alarm_btn(lv_event_t *e);
-lv_obj_t *ui_alarm_btn;
-lv_obj_t *ui_Image2;
-lv_obj_t *ui_CRASH_img;
+void ui_event_siren_btn(lv_event_t *e);
+lv_obj_t *ui_siren_btn;
+lv_obj_t *ui_play_siren_btn;
 
 
 // SCREEN: ui_scr2
@@ -607,7 +607,7 @@ void ui_event_camera_btn(lv_event_t *e) {
         flashscreen_Animation(ui_scr1, 0);
     }
 }
-void ui_event_alarm_btn(lv_event_t *e) {
+void ui_event_siren_btn(lv_event_t *e) {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t *target           = lv_event_get_target(e);
     if(event_code == LV_EVENT_VALUE_CHANGED && lv_obj_has_state(target, LV_STATE_CHECKED)) {

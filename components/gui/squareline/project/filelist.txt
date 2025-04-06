@@ -5,6 +5,7 @@ components/ui_comp_hook.c
 ui_helpers.c
 ui_events.c
 images/ui_img_1148992643.c
+images/ui_img_220525951.c
 images/ui_img_sun_png.c
 images/ui_img_497089268.c
 images/ui_img_clouds_png.c
@@ -19,5 +20,4 @@ images/ui_img_temper_png.c
 images/ui_img_weather_1_png.c
 images/ui_img_360038530.c
 images/ui_img_settings_png.c
-images/ui_img_220525951.c
 images/ui_img_weather_2_png.c

@@ -316,8 +316,8 @@ void gui_set_night(void) {
 }
 
 void gui_crash(void) {
-    if(ui_CRASH_img == NULL)
-        return;
+    // if(ui_CRASH_img == NULL)
+    //    return;
     lv_obj_clear_state(ui_CRASH_img, LV_OBJ_FLAG_HIDDEN);
     return;
 }

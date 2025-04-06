@@ -170,7 +170,7 @@ void gui_local_temp_set(const char *temp);
  *
  * @param temp A string representing the temperature (e.g., "23°C").
  */
-void gui_hum_temp_set(const char *hum);ž
+void gui_hum_temp_set(const char *hum);
 
 /**
  *  @brief Changes panel view to doors view
