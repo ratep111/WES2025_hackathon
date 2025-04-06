@@ -108,7 +108,7 @@ void acc_data_provider_task(void *pvParameters) {
 
             // Debug log (reduced frequency to avoid console flooding)
             if(local_data.sample_count % 50 == 0) {
-                ESP_LOGD(TAG,
+                ESP_LOGE(TAG,
                         "ACC data: X=%.2f Y=%.2f Z=%.2f Mag=%.2f",
                         local_data.filtered_acc_x,
                         local_data.filtered_acc_y,
@@ -116,7 +116,7 @@ void acc_data_provider_task(void *pvParameters) {
                         local_data.magnitude);
             }
         } else if(read_status == LIS2DH12TR_READING_ERROR) {
-            ESP_LOGW(TAG, "Error reading accelerometer data");
+            ESP_LOGE(TAG, "Error reading accelerometer data");
         }
 
         // Run at a fixed frequency

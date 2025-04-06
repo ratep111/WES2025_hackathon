@@ -36,7 +36,7 @@ void updateTimeTask(void *params) {
         localtime_r(&now, &timeinfo);
 
         // Adjust for timezone if necessary
-        setenv("TZ", "CEST", 1);
+        setenv("TZ", "CET-1CEST,M3.5.0,M10.5.0/3", 1);
         tzset();
         localtime_r(&now, &timeinfo);
 
@@ -102,16 +102,22 @@ static void initialize_time_sync(void) {
 
 static void update_time_and_timezone(void) {
     ESP_LOGI(TAG, "Updating time and timezone settings");
-    if(timeinfo.tm_year < (2016 - 1900)) { // Check if time was never set
-        time(&now);
-        localtime_r(&now, &timeinfo);
-    }
-    setenv("TZ", "CEST", 1);
+
+    // Set timezone to Central European Time with proper format
+    // CET-1CEST,M3.5.0,M10.5.0/3 means:
+    // - CET with 1 hour offset from UTC
+    // - CEST (summer time) starts last Sunday of March
+    // - CEST ends last Sunday of October at 3:00
+    setenv("TZ", "CET-1CEST,M3.5.0,M10.5.0/3", 1);
     tzset();
+
+    // Get the current time with the timezone applied
+    time(&now);
+    localtime_r(&now, &timeinfo);
 }
 
 static void log_current_time(void) {
-    timeinfo.tm_hour = timeinfo.tm_hour + 2;
+    timeinfo.tm_hour = timeinfo.tm_hour;
     strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
     ESP_LOGI(TAG, "Current date/time: %s", strftime_buf);
 }
