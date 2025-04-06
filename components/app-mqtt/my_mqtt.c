@@ -28,11 +28,12 @@
 #include "../json/cJSON/cJSON.h"
 #include "my_sntp.h"
 #include "../eeprom/at24cx_i2c.h"
+#include "mqtt_client.h"
 
 //---------------------------------- MACROS -----------------------------------
 #define TAG        "MQTT"
-#define MQTT_URI   "mqtt://localhost"
-#define MQTT_TOPIC "your/topic"
+#define MQTT_URI   "mqtt://192.168.160.50:1883"
+#define MQTT_TOPIC "gps/directions"
 
 #define WIFI_SSID   "myssid"
 #define WIFI_PASS   "mypassword"
@@ -134,21 +135,21 @@ esp_err_t mqtt_client_init(void) {
     }
 
     // Initialize MQTT client
-    // esp_mqtt_client_config_t mqtt_cfg = {
-    //     .broker = {
-    //         .address.uri = MQTT_URI,
-    //     },
-    // };
+    esp_mqtt_client_config_t mqtt_cfg = {
+        .broker = {
+            .address.uri = MQTT_URI,
+        },
+    };
 
-    // s_client = esp_mqtt_client_init(&mqtt_cfg);
-    // if(s_client == NULL) {
-    //     ESP_LOGE(TAG, "Failed to initialize MQTT client");
-    //     return ESP_FAIL;
-    // }
+    s_client = esp_mqtt_client_init(&mqtt_cfg);
+    if(s_client == NULL) {
+        ESP_LOGE(TAG, "Failed to initialize MQTT client");
+        return ESP_FAIL;
+    }
 
     // Register event handler
-    // ESP_ERROR_CHECK(esp_mqtt_client_register_event(s_client, ESP_EVENT_ANY_ID, _mqtt_client_event_handler, NULL));
-    // ESP_ERROR_CHECK(esp_mqtt_client_start(s_client));
+    ESP_ERROR_CHECK(esp_mqtt_client_register_event(s_client, ESP_EVENT_ANY_ID, _mqtt_client_event_handler, NULL));
+    ESP_ERROR_CHECK(esp_mqtt_client_start(s_client));
 
     // Create task to handle publishing temperature data
     // BaseType_t task_created = xTaskCreate(_mqtt_client_temp_task, "mqtt_temp_task", 4096, NULL, 5, NULL);
@@ -159,7 +160,7 @@ esp_err_t mqtt_client_init(void) {
 
     sntp_app_main();
 
-    esp_wifi_stop();
+    // esp_wifi_stop();
 
 
     return ESP_OK;
@@ -170,14 +171,6 @@ bool mqtt_client_is_connected(void) {
 }
 
 //---------------------------- PRIVATE FUNCTIONS ------------------------------
-static char *_mqtt_client_create_json_payload(float temperature, float humidity) {
-    cJSON *root = cJSON_CreateObject();
-    cJSON_AddNumberToObject(root, "temp", temperature);
-    cJSON_AddNumberToObject(root, "hum", humidity);
-    char *json = cJSON_PrintUnformatted(root);
-    cJSON_Delete(root);
-    return json;
-}
 
 static void _mqtt_client_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
     esp_mqtt_event_handle_t event = (esp_mqtt_event_handle_t) event_data;
@@ -186,6 +179,7 @@ static void _mqtt_client_event_handler(void *handler_args, esp_event_base_t base
         case MQTT_EVENT_CONNECTED:
             s_mqtt_connected = true;
             ESP_LOGI(TAG, "Connected to MQTT broker");
+            esp_mqtt_client_subscribe(s_client, "gps/directions", 1);
             break;
         case MQTT_EVENT_DISCONNECTED:
             s_mqtt_connected = false;
