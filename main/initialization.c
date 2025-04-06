@@ -31,6 +31,8 @@
 #include "pcf8574.h"
 #include "speaker.h"
 #include "gui_controller.h"
+#include "acc_data_provider.h"
+
 
 
 /*******************************************************************************/
@@ -123,6 +125,22 @@ void initialization_peripheral_creator() {
 
     ESP_LOGI("EXPANDER", "PCF8574 initialized and all pins set LOW");
 
+    // Initialize accelerometer data provider
+    esp_err_t ret = acc_data_provider_init();
+    if(ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize accelerometer data provider");
+        return;
+    }
+
+    // Start accelerometer data provider task
+    ret = acc_data_provider_start();
+    if(ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to start accelerometer data provider task");
+        return;
+    }
+
+    ESP_LOGI(TAG, "Accelerometer data provider started successfully");
+
     // --- Start I2C Temperature/Humidity Sensor ---
     if(sht3x_start_periodic_measurement() != ESP_OK) {
         ESP_LOGE(TAG, "Failed to start SHT3x periodic measurement!");
@@ -148,10 +166,11 @@ void initailization_task_creator() {
     vTaskDelay(pdMS_TO_TICKS(2000));
 
     // --- Crash detector ---
-    // ESP_ERROR_CHECK(crash_detector_init());
-    // xTaskCreatePinnedToCore(crash_detector_task, "crash_detector", 4096, NULL, 5, NULL, 0);
+    ESP_ERROR_CHECK(crash_detector_init());
+    ESP_ERROR_CHECK(speed_estimator_init());
+    xTaskCreatePinnedToCore(crash_detector_task, "crash_detector", 4096, NULL, 5, NULL, 0);
     xTaskCreatePinnedToCore(audio_task, "audioTask", 4096, NULL, 5, NULL, 0);
-    // xTaskCreatePinnedToCore(speed_estimator_task, "speedEstimator", 4096, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(speed_estimator_task, "speedEstimator", 4096, NULL, 5, NULL, 0);
     ESP_LOGI(TAG, "All sensor tasks started.");
 }
 
