@@ -91,7 +91,7 @@ static void initialize_time_sync(void) {
     setup_sntp();
 
     // Wait for time to be set
-    const int retry_count = 15;
+    const int retry_count = 5;
     for(int retry = 0; retry < retry_count && sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET; ++retry) {
         ESP_LOGI(TAG, "Waiting for system time to be set... (%d/%d)", retry + 1, retry_count);
         vTaskDelay(2000 / portTICK_PERIOD_MS);
