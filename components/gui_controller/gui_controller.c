@@ -60,14 +60,15 @@ static void door_state_callback(door_state_t state);
 static void light_state_callback(light_state_t state);
 
 /**
-  * @brief Main task for the GUI controller
-  * 
-  * This task periodically checks for events and updates the GUI accordingly
-  */
+   * @brief Main task for the GUI controller
+   * 
+   * This task periodically checks for events and updates the GUI accordingly
+   */
 static void gui_controller_task(void *pvParameters) {
     char time_str[16] = { 0 };
     char date_str[16] = { 0 };
     char temp_str[16] = { 0 };
+    char hum_str[16]  = { 0 };
 
     ESP_LOGI(TAG, "GUI controller task started");
 
@@ -128,8 +129,16 @@ static void gui_controller_task(void *pvParameters) {
 
         // Handle temperature updates
         if(events & GUI_EVT_TEMP_UPDATE) {
+            // Format temperature string
             sprintf(temp_str, "%.1f°C", current_temp_humidity.temperature);
-            gui_temp_set(temp_str);
+
+            // Format humidity string
+            sprintf(hum_str, "%.1f%%", current_temp_humidity.humidity);
+
+            // Update GUI with temperature and humidity
+            gui_local_temp_set(temp_str);
+            gui_sntp_temp_set(temp_str); // Also update the SNTP temp for consistency
+            gui_hum_temp_set(hum_str);
 
             // Update weather info based on temperature and light
             char weather_info[64];
@@ -166,8 +175,8 @@ static void gui_controller_task(void *pvParameters) {
 }
 
 /**
-  * @brief Updates proximity based on parking sensor data
-  */
+   * @brief Updates proximity based on parking sensor data
+   */
 static void update_proximity_from_parking_sensor(void) {
     uint32_t distance;
     esp_err_t err = parking_sensor_get_distance(&distance);
@@ -214,8 +223,8 @@ static void update_proximity_from_parking_sensor(void) {
 }
 
 /**
-   * @brief Crash event callback
-   */
+    * @brief Crash event callback
+    */
 static void crash_event_callback(crash_event_t *event) {
     crash_detected = true;
     ESP_LOGI(TAG, "Crash detected! Impact force: %.2f g", event->impact_force);
@@ -230,8 +239,8 @@ static void crash_event_callback(crash_event_t *event) {
 }
 
 /**
-   * @brief Door state change callback
-   */
+    * @brief Door state change callback
+    */
 static void door_state_callback(door_state_t state) {
     // Mock: Update the driver's door for demonstration
     door_states[front_left] = state; // Use enum from gui.h
@@ -240,8 +249,8 @@ static void door_state_callback(door_state_t state) {
 }
 
 /**
-   * @brief Light state change callback
-   */
+    * @brief Light state change callback
+    */
 static void light_state_callback(light_state_t state) {
     current_light_state = state;
     xEventGroupSetBits(gui_event_group, GUI_EVT_LIGHT_UPDATE);
@@ -251,8 +260,8 @@ static void light_state_callback(light_state_t state) {
 }
 
 /**
-   * @brief Periodic temperature reading task
-   */
+    * @brief Periodic temperature reading task
+    */
 static void temp_sensor_task(void *pvParameters) {
     TickType_t last_wake_time = xTaskGetTickCount();
 
@@ -277,8 +286,8 @@ static void temp_sensor_task(void *pvParameters) {
 }
 
 /**
-   * @brief Sensor reading function for the speed estimator
-   */
+    * @brief Sensor reading function for the speed estimator
+    */
 static void speed_sensor_task(void *pvParameters) {
     TickType_t last_wake_time = xTaskGetTickCount();
 
@@ -286,8 +295,6 @@ static void speed_sensor_task(void *pvParameters) {
         // Get speed from the speed estimator
         float speed_kmh = speed_estimator_get_speed_kmh();
         current_speed   = (int) speed_kmh;
-
-        // ESP_LOGE(TAG, "Current speed: %.2f", speed_kmh);
 
         // Set the event bit to update the GUI
         xEventGroupSetBits(gui_event_group, GUI_EVT_SPEED_UPDATE);
@@ -301,8 +308,8 @@ static void speed_sensor_task(void *pvParameters) {
 }
 
 /**
-  * @brief Task to periodically update proximity readings
-  */
+   * @brief Task to periodically update proximity readings
+   */
 static void proximity_sensor_task(void *pvParameters) {
     TickType_t last_wake_time = xTaskGetTickCount();
 
@@ -316,11 +323,11 @@ static void proximity_sensor_task(void *pvParameters) {
 }
 
 /**
-  * @brief Initialize the GUI controller
-  * 
-  * This function initializes all sensor modules and registers callbacks
-  * for sensor events to update the GUI
-  */
+   * @brief Initialize the GUI controller
+   * 
+   * This function initializes all sensor modules and registers callbacks
+   * for sensor events to update the GUI
+   */
 esp_err_t gui_controller_init(void) {
     esp_err_t ret = ESP_OK;
 
@@ -382,8 +389,8 @@ esp_err_t gui_controller_init(void) {
     return ESP_OK;
 }
 /**
-   * @brief Deinitialize the GUI controller
-   */
+    * @brief Deinitialize the GUI controller
+    */
 esp_err_t gui_controller_deinit(void) {
     if(gui_controller_task_handle != NULL) {
         vTaskDelete(gui_controller_task_handle);
@@ -399,10 +406,10 @@ esp_err_t gui_controller_deinit(void) {
 }
 
 /**
-   * @brief Simulate a fuel level change (for demo purposes)
-   * 
-   * @param percentage New fuel level (0-100)
-   */
+    * @brief Simulate a fuel level change (for demo purposes)
+    * 
+    * @param percentage New fuel level (0-100)
+    */
 void gui_controller_set_fuel(int percentage) {
     if(percentage < 0)
         percentage = 0;
