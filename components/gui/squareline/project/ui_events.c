@@ -15,7 +15,7 @@ void btn_clicked(lv_event_t *e) {
 }
 
 void ui_camera_btn_pressed(lv_event_t *e) {
-    // Your code here
+    // pcf8574_set_pin(0, true); // Release pin (HIGH)
 }
 
 void ui_alarm_on(lv_event_t *e) {
