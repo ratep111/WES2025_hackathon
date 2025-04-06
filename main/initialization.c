@@ -133,23 +133,23 @@ void initialization_peripheral_creator() {
     }
 
     ESP_ERROR_CHECK(mqtt_client_init());
+    vTaskDelay(pdMS_TO_TICKS(3000));
 
     // --- Initialize UI + perf monitor ---
     gui_init();
-    perfmon_start();
-    i2s_dac_init();
+    //perfmon_start();
 
-    vTaskDelay(pdMS_TO_TICKS(2000));
+    vTaskDelay(pdMS_TO_TICKS(3000));
 
-
-    // Initialize accelerometer data provider
-    esp_err_t ret = acc_data_provider_init();
+    esp_err_t ret;
+    //Initialize accelerometer data provider esp_err_t
+    ret = acc_data_provider_init();
     if(ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize accelerometer data provider");
         return;
     }
 
-    // Start accelerometer data provider task
+    //Start accelerometer data provider task
     ret = acc_data_provider_start();
     if(ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to start accelerometer data provider task");
@@ -158,6 +158,7 @@ void initialization_peripheral_creator() {
 
     ESP_LOGI(TAG, "Accelerometer data provider started successfully");
 
+    i2s_dac_init();
 
     vTaskDelay(pdMS_TO_TICKS(1000));
 }
@@ -165,7 +166,6 @@ void initialization_peripheral_creator() {
 void initailization_task_creator() {
 
     ESP_LOGI(TAG, "Launching sensor tasks...");
-
 
     xTaskCreatePinnedToCore(parking_sensor_task, "parking_sensor", 4096, NULL, 5, NULL, 0);
     xTaskCreatePinnedToCore(day_night_task, "day_night_sensor", 4096, NULL, 5, NULL, 0);
@@ -176,9 +176,11 @@ void initailization_task_creator() {
     // --- Crash detector ---
     ESP_ERROR_CHECK(crash_detector_init());
     ESP_ERROR_CHECK(speed_estimator_init());
-    xTaskCreatePinnedToCore(crash_detector_task, "crash_detector", 4096, NULL, 5, NULL, 0);
-    xTaskCreatePinnedToCore(audio_task, "audioTask", 4096, NULL, 5, NULL, 0);
-    xTaskCreatePinnedToCore(speed_estimator_task, "speedEstimator", 4096, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(crash_detector_task, "crash_detector", 4096, NULL, 9, NULL, 0);
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    xTaskCreatePinnedToCore(audio_task, "audioTask", 4096, NULL, 9, NULL, 0);
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    xTaskCreatePinnedToCore(speed_estimator_task, "speedEstimator", 4096, NULL, 4, NULL, 0);
     ESP_LOGI(TAG, "All sensor tasks started.");
 }
 
@@ -199,7 +201,6 @@ void initialization_gui_controller() {
 
     ESP_LOGI(TAG, "GUI controller initialized successfully");
 }
-
 
 /*******************************************************************************/
 /*                             PRIVATE FUNCTIONS                               */

@@ -44,19 +44,19 @@ void audio_task(void *arg) {
     size_t audio_len          = sizeof(mixkit_police_siren_us_1643) - skip_bytes;
 
     // Create a scaled copy of the audio data for better volume
-    uint8_t *scaled_audio = malloc(audio_len);
-    if(!scaled_audio) {
-        ESP_LOGE(TAG, "Failed to allocate memory for scaled audio");
-        vTaskDelete(NULL);
-        return;
-    }
+    // uint8_t *scaled_audio = malloc(audio_len);
+    // if(!scaled_audio) {
+    //     ESP_LOGE(TAG, "Failed to allocate memory for scaled audio");
+    //     vTaskDelete(NULL);
+    //     return;
+    // }
 
-    // Scale up the volume
-    for(size_t i = 0; i < audio_len; i++) {
-        // Scale up by 1.5x, clipping at 255
-        uint16_t scaled = (uint16_t) audio_data[i] * 1.5;
-        scaled_audio[i] = (scaled > 255) ? 255 : scaled;
-    }
+    // // Scale up the volume
+    // for(size_t i = 0; i < audio_len; i++) {
+    //     // Scale up by 1.5x, clipping at 255
+    //     uint16_t scaled = (uint16_t) audio_data[i] * 1.5;
+    //     scaled_audio[i] = (scaled > 255) ? 255 : scaled;
+    // }
 
     ESP_LOGI(TAG, "Starting audio playback, length: %d bytes", audio_len);
 
@@ -64,7 +64,7 @@ void audio_task(void *arg) {
     size_t current_pos   = 0;
 
     // Initial buffer fill
-    i2s_write(I2S_PORT, scaled_audio, audio_len > 4096 ? 4096 : audio_len, &bytes_written, portMAX_DELAY);
+    i2s_write(I2S_PORT, audio_data, audio_len > 4096 ? 4096 : audio_len, &bytes_written, portMAX_DELAY);
     current_pos += bytes_written;
 
     while(1) {
@@ -75,13 +75,13 @@ void audio_task(void *arg) {
                 if(remaining > 0) {
                     // Write next chunk of data
                     size_t to_write = (remaining > 4096) ? 4096 : remaining;
-                    i2s_write(I2S_PORT, scaled_audio + current_pos, to_write, &bytes_written, 0);
+                    i2s_write(I2S_PORT, audio_data + current_pos, to_write, &bytes_written, 0);
                     current_pos += bytes_written;
                 } else {
                     // Loop back to start
                     current_pos = 0;
                     ESP_LOGI(TAG, "Audio looped back to start");
-                    i2s_write(I2S_PORT, scaled_audio, audio_len > 4096 ? 4096 : audio_len, &bytes_written, 0);
+                    i2s_write(I2S_PORT, audio_data, audio_len > 4096 ? 4096 : audio_len, &bytes_written, 0);
                     current_pos += bytes_written;
                 }
             }
@@ -89,6 +89,6 @@ void audio_task(void *arg) {
     }
 
     // This code will never be reached, but good practice to include
-    free(scaled_audio);
+    // free(audio_data);
     vTaskDelete(NULL);
 }

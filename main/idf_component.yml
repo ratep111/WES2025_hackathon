@@ -16,4 +16,3 @@ dependencies:
   #   public: true
   protocol_examples_common:
     path: ${IDF_PATH}/examples/common_components/protocol_examples_common
-

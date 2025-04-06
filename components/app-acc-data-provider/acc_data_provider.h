@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 /** @brief Update rate for accelerometer reading in milliseconds */
-#define ACC_UPDATE_RATE_MS 20 // Higher frequency than any consumer needs
+#define ACC_UPDATE_RATE_MS 200 // Higher frequency than any consumer needs
 
 /**
  * @brief Shared accelerometer data structure

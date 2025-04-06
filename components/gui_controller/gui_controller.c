@@ -28,7 +28,7 @@
 #include <string.h>
 
 #define TAG                             "GUI_CTRL"
-#define GUI_CONTROLLER_UPDATE_PERIOD_MS 100
+#define GUI_CONTROLLER_UPDATE_PERIOD_MS 500
 #define GUI_CONTROLLER_STACK_SIZE       4096
 #define GUI_CONTROLLER_PRIORITY         5
 
@@ -81,7 +81,7 @@ static void gui_controller_task(void *pvParameters) {
         if(events & GUI_EVT_SPEED_UPDATE) {
             gui_speed_bar_set(current_speed);
             xEventGroupClearBits(gui_event_group, GUI_EVT_SPEED_UPDATE);
-            ESP_LOGD(TAG, "Updated speed: %d", current_speed);
+            ESP_LOGE(TAG, "Updated speed: %d", current_speed);
         }
 
         // Handle proximity updates
@@ -349,7 +349,7 @@ esp_err_t gui_controller_init(void) {
             NULL,
             GUI_CONTROLLER_PRIORITY,
             &gui_controller_task_handle,
-            0 // Run on Core 0 (GUI runs on Core 1)
+            1 // Run on Core 0 (GUI runs on Core 1)
     );
 
     if(task_created != pdPASS) {

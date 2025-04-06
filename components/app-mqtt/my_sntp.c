@@ -40,13 +40,12 @@ void updateTimeTask(void *params) {
         tzset();
         localtime_r(&now, &timeinfo);
 
-        timeinfo.tm_hour = timeinfo.tm_hour + 2;
+        timeinfo.tm_hour = timeinfo.tm_hour;
         // Prepare time string
 
         ESP_LOGI(TAG, "Initializing AT24CX. . .");
 
         at24cx_i2c_device_register(32, 0x50); // AT24C32 at address 0x50
-
 
         struct tm time;
         time.tm_min   = timeinfo.tm_min;
