@@ -1,6 +1,11 @@
 #ifndef INITIALIZATION_H
 #define INITIALIZATION_H
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+extern TaskHandle_t audio_task_handle;
+
 /**
  * @brief Initialize all peripheral devices
  * 

@@ -109,29 +109,29 @@ void gui_speed_bar_set(int32_t new_speed) {
     }
     if(ui_speed_panel != NULL) {
 
-        int border_width = 2;
-        int shadow_width = 0;
+        // int border_width = 2;
+        // int shadow_width = 0;
 
-        if(new_speed < speed_low) {
-            border_width = 2;
-        } else if(new_speed < speed_mid) {
-            border_width = 2;
-        } else {
-            border_width = 3;
-            if(new_speed > speed_high) {
-                shadow_width = 10; // Add glow effect
-            }
-        }
+        // if(new_speed < speed_low) {
+        //     border_width = 2;
+        // } else if(new_speed < speed_mid) {
+        //     border_width = 2;
+        // } else {
+        //     border_width = 3;
+        //     if(new_speed > speed_high) {
+        //         shadow_width = 10; // Add glow effect
+        //     }
+        // }
 
         lv_color_t border_color = _get_speed_color(new_speed);
 
         // Apply styles to speed panel
-        lv_obj_set_style_border_color(ui_speed_panel, border_color, LV_PART_MAIN);
-        lv_obj_set_style_border_width(ui_speed_panel, border_width, LV_PART_MAIN);
-        lv_obj_set_style_border_opa(ui_speed_panel, 80, LV_PART_MAIN);
-        lv_obj_set_style_outline_color(ui_speed_panel, border_color, LV_PART_MAIN);
-        lv_obj_set_style_outline_width(ui_speed_panel, border_width, LV_PART_MAIN);
-        lv_obj_set_style_outline_opa(ui_speed_panel, 80, LV_PART_MAIN);
+        // lv_obj_set_style_border_color(ui_speed_panel, border_color, LV_PART_MAIN);
+        // lv_obj_set_style_border_width(ui_speed_panel, border_width, LV_PART_MAIN);
+        // lv_obj_set_style_border_opa(ui_speed_panel, 80, LV_PART_MAIN);
+        // lv_obj_set_style_outline_color(ui_speed_panel, border_color, LV_PART_MAIN);
+        // lv_obj_set_style_outline_width(ui_speed_panel, border_width, LV_PART_MAIN);
+        // lv_obj_set_style_outline_opa(ui_speed_panel, 80, LV_PART_MAIN);
 
         // Apply style to bar indicator
         lv_obj_set_style_bg_color(ui_speed_bar, border_color, LV_PART_INDICATOR);
@@ -261,6 +261,64 @@ void gui_hum_temp_set(const char *hum) {
     }
 
     lv_label_set_text(ui_top_hum_lbl, hum);
+    return;
+}
+
+
+void gui_set_doors_panel(void) {
+    if(ui_gesture_panel_3 == NULL) {
+        ESP_LOGE(TAG, "Panel not initialized!");
+        return;
+    }
+
+    lv_obj_t *panels[] = { ui_gesture_panel_1, ui_gesture_panel_2, ui_gesture_panel_3, ui_gesture_panel_4, ui_gesture_panel_5 };
+    for(int i = 0; i < 5; i++) {
+        lv_obj_add_state(panels[i], LV_OBJ_FLAG_HIDDEN);
+    }
+
+    lv_obj_clear_state(ui_gesture_panel_3, LV_OBJ_FLAG_HIDDEN);
+}
+
+
+void gui_set_parking_panel(void) {
+    if(ui_gesture_panel_5 == NULL) {
+        ESP_LOGE(TAG, "Panel not initialized!");
+        return;
+    }
+
+    lv_obj_t *panels[] = { ui_gesture_panel_1, ui_gesture_panel_2, ui_gesture_panel_3, ui_gesture_panel_4, ui_gesture_panel_5 };
+
+    for(int i = 0; i < 5; i++) {
+        lv_obj_add_state(panels[i], LV_OBJ_FLAG_HIDDEN);
+    }
+
+    lv_obj_clear_state(ui_gesture_panel_5, LV_OBJ_FLAG_HIDDEN);
+}
+
+
+void gui_set_day(void) {
+    if(ui_sun_img == NULL)
+        return;
+
+    lv_obj_add_state(ui_moon, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_state(ui_sun_img, LV_OBJ_FLAG_HIDDEN);
+    return;
+}
+
+
+void gui_set_night(void) {
+    if(ui_moon == NULL)
+        return;
+
+    lv_obj_add_state(ui_sun_img, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_state(ui_moon, LV_OBJ_FLAG_HIDDEN);
+    return;
+}
+
+void gui_crash(void) {
+    // if(ui_CRASH_img == NULL)
+    //    return;
+    lv_obj_clear_state(ui_CRASH_img, LV_OBJ_FLAG_HIDDEN);
     return;
 }
 

@@ -172,6 +172,36 @@ void gui_local_temp_set(const char *temp);
  */
 void gui_hum_temp_set(const char *hum);
 
+/**
+ *  @brief Changes panel view to doors view
+ * 
+ */
+void gui_set_doors_panel(void);
+
+/**
+ * @brief Changes panel view to parking view
+ * 
+ */
+void gui_set_parking_panel(void);
+
+/**
+ * @brief Shows sun hides mooon
+ * 
+ */
+void gui_set_day(void);
+
+/**
+ * @brief Shows moon hides sun
+ * 
+ */
+void gui_set_night(void);
+
+/**
+ * @brief CRASH
+ * 
+ */
+void gui_crash(void);
+
 
 #ifdef __cplusplus
 }

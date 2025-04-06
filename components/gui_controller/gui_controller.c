@@ -169,6 +169,7 @@ static void gui_controller_task(void *pvParameters) {
             xEventGroupSetBits(gui_event_group, GUI_EVT_TIME_UPDATE);
         }
 
+
         // Wait for the next cycle
         vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(GUI_CONTROLLER_UPDATE_PERIOD_MS));
     }
@@ -230,6 +231,7 @@ static void crash_event_callback(crash_event_t *event) {
 
     // You could add warning indicators to the GUI for crashes
     // For example, make speed indicator flash red
+    gui_crash();
 
     // Auto-reset after a while
     vTaskDelay(pdMS_TO_TICKS(CRASH_RESET_TIMEOUT_MS));
