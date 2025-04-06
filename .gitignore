@@ -74,3 +74,6 @@ html
 
 # Build directory
 build/
+
+# Dependency bullshit
+*.lock
