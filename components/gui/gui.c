@@ -169,11 +169,10 @@ void gui_time_set(const char *time) {
 }
 
 void gui_date_set(const char *date) {
-    if(ui_date_lbl == NULL || ui_top_date_lbl == NULL) {
+    if(ui_date_lbl == NULL) {
         ESP_LOGE(TAG, "Date labels not initialized!");
         return;
     }
-    lv_label_set_text(ui_date_lbl, date);
     lv_label_set_text(ui_date_lbl, date);
     return;
 }
@@ -316,8 +315,8 @@ void gui_set_night(void) {
 }
 
 void gui_crash(void) {
-    // if(ui_CRASH_img == NULL)
-    //    return;
+    if(ui_CRASH_img == NULL)
+        return;
     lv_obj_clear_state(ui_CRASH_img, LV_OBJ_FLAG_HIDDEN);
     return;
 }

@@ -91,7 +91,6 @@ lv_obj_t *ui_door_front_left_open_bar;
 lv_obj_t *ui_door_back_right_open_bar;
 lv_obj_t *ui_door_back_left_open_bar;
 lv_obj_t *ui_door_trunk_open_bar;
-lv_obj_t *ui_door_open_lbl;
 void ui_event_gesture_panel_4(lv_event_t *e);
 lv_obj_t *ui_gesture_panel_4;
 lv_obj_t *ui_scrolldots3;
@@ -104,7 +103,6 @@ lv_obj_t *ui_content_panel_4;
 lv_obj_t *ui_right_turn_img;
 lv_obj_t *ui_turn_distance_lbl;
 lv_obj_t *ui_top_time_lbl;
-lv_obj_t *ui_top_date_lbl;
 lv_obj_t *ui_top_panel;
 lv_obj_t *ui_dummy_arc;
 lv_obj_t *ui_fuel_green_arc;
@@ -126,6 +124,7 @@ lv_obj_t *ui_settings_img;
 void ui_event_siren_btn(lv_event_t *e);
 lv_obj_t *ui_siren_btn;
 lv_obj_t *ui_play_siren_btn;
+lv_obj_t *ui_top_date_lbl;
 
 
 // SCREEN: ui_scr2

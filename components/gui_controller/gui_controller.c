@@ -89,6 +89,7 @@ static void gui_controller_task(void *pvParameters) {
             // Ensure the proximity value is valid before updating
             if(current_proximity >= 0 && current_proximity < GUI_PROX_NUM) {
                 ESP_LOGD(TAG, "Setting proximity to: %d", current_proximity);
+                gui_set_parking_panel();
                 gui_proximity_set(current_proximity);
             } else {
                 ESP_LOGW(TAG, "Skipping proximity update - invalid value: %d", current_proximity);
@@ -98,6 +99,7 @@ static void gui_controller_task(void *pvParameters) {
 
         // Handle door updates
         if(events & GUI_EVT_DOOR_UPDATE) {
+            gui_set_doors_panel();
             for(int i = 0; i < gui_num_of_doors; i++) {
                 if(door_states[i] == DOOR_STATE_OPEN) {
                     gui_set_door_open((gui_doors_t) i);
@@ -148,7 +150,9 @@ static void gui_controller_task(void *pvParameters) {
                 } else {
                     sprintf(weather_info, "Cloudy, %.1f°C", current_temp_humidity.temperature);
                 }
+                gui_set_day();
             } else {
+                gui_set_night();
                 sprintf(weather_info, "Night, %.1f°C", current_temp_humidity.temperature);
             }
             gui_weather_set(weather_info);
@@ -231,7 +235,6 @@ static void crash_event_callback(crash_event_t *event) {
 
     // You could add warning indicators to the GUI for crashes
     // For example, make speed indicator flash red
-    gui_crash();
 
     // Auto-reset after a while
     vTaskDelay(pdMS_TO_TICKS(CRASH_RESET_TIMEOUT_MS));
