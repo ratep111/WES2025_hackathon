@@ -1,5 +1,11 @@
 # 🚨 WES2025 Hackathon – Embedded Infotainment System
 
+**Team #4 - Firma/Depwesija**
+- **Majda Bakmaz**
+- **Luka Bradaric-Lisic**
+- **Petar Jakus**
+- **Jakov Jovic**
+
 A modular, embedded infotainment and monitoring system designed for **emergency vehicles** such as ambulances, firetrucks, and police units.  
 Built with **ESP-IDF**, **FreeRTOS**, and **LVGL**, this system integrates with onboard sensors to provide real-time feedback, environmental monitoring, and user-friendly interaction through a touch display.
 
