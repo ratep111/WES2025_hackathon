@@ -102,7 +102,7 @@ void parking_sensor_task(void *pvParameters) {
             ESP_LOGE(TAG, "Distance read failed: %s", esp_err_to_name(ret));
             current_distance = MAX_DISTANCE;
             buzzer_set_duty(0);
-            vTaskDelay(pdMS_TO_TICKS(1000));
+            vTaskDelay(pdMS_TO_TICKS(delay_ms));
         }
     }
 }

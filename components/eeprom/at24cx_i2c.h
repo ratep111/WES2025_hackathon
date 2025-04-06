@@ -37,31 +37,33 @@ typedef struct {
  * @brief Register device.
  * @details Register device based on specification.
 */
-void at24cx_i2c_device_register(at24cx_dev_t *dev, uint16_t _dev_chip, uint8_t _i2c_addres);
+void at24cx_i2c_device_register(uint16_t _dev_chip, uint8_t _i2c_addres);
 
 /**
  * @brief Write word to device.
  * @details Read word to AT24CX.
 */
-at24cx_err_t at24cx_i2c_byte_write(at24cx_dev_t dev, at24cx_writedata_t dt);
+at24cx_err_t at24cx_i2c_byte_write(at24cx_writedata_t dt);
 
 /**
  * @brief Write multi word to device.
  * @details Write 128 bytes to AT24CX.
 */
-at24cx_err_t at24cx_i2c_page_write(at24cx_dev_t dev, at24cx_writedata_t dt);
+at24cx_err_t at24cx_i2c_page_write(at24cx_writedata_t dt);
 
 /**
  * @brief Read word from device.
  * @details Read word from AT24CX.
 */
-at24cx_err_t at24cx_i2c_byte_read(at24cx_dev_t dev, at24cx_writedata_t *dt);
+at24cx_err_t at24cx_i2c_byte_read(at24cx_writedata_t *dt);
 
 /**
  * @brief Read from device.
  * @details Read word from current address of AT24CX.
 */
 at24cx_err_t at24cx_i2c_current_address_read(at24cx_dev_t dev, at24cx_writedata_t *dt);
+
+void write_to_eeprom(uint8_t *data, uint8_t size);
 
 #ifdef __cplusplus
 }

@@ -1,10 +1,9 @@
 /*******************************************************************************/
 /*                                  INCLUDES                                   */
 /*******************************************************************************/
-
 #include "initialization.h"
-
 #include "speaker.h"
+#include "gui_controller.h" // Add the GUI controller header
 
 /*******************************************************************************/
 /*                                   MACROS                                     */
@@ -30,8 +29,28 @@
 /*                              PUBLIC FUNCTIONS                               */
 /*******************************************************************************/
 void app_main() {
+    // Initialize peripherals (I2C, sensors, GUI)
     initialization_peripheral_creator();
+
+    // Start all sensor tasks
     initailization_task_creator();
+
+    // Initialize the GUI controller after peripherals and tasks are ready
+    initialization_gui_controller();
+
+    // Optionally: Setup demo mode (uncomment if needed)
+    /*
+    // Wait a bit to let everything initialize
+    vTaskDelay(pdMS_TO_TICKS(5000));
+    
+    // Demo: simulate different states for testing
+    gui_controller_set_fuel(75);  // Set fuel to 75%
+    
+    vTaskDelay(pdMS_TO_TICKS(5000));
+    gui_controller_set_fuel(50);  // Set fuel to 50%
+    
+    // Add other demo operations as needed
+    */
 }
 
 /*******************************************************************************/

@@ -3,7 +3,7 @@
  * @brief Impact/crash detection using accelerometer
  */
 #include "crash_detector.h"
-#include "LIS2DH12TR.h"
+#include "acc_data_provider.h" // Use the centralized provider
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -52,7 +52,6 @@ static void format_timestamp(time_t ts, char *buf, size_t size) {
             timeinfo.tm_sec);
 }
 
-// === NEW: PCF8574 GPIO helper ===
 static void pcf8574_set_pin(uint8_t pin, bool high) {
     if(high)
         expander_state |= (1 << pin); // release line (idle)
@@ -91,20 +90,26 @@ esp_err_t crash_detector_init(void) {
         return ESP_FAIL;
     }
 
-    ESP_LOGE(TAG, "Crash detector initialized with threshold: %.2fg", crash_threshold);
+    ESP_LOGI(TAG, "Crash detector initialized with threshold: %.2fg", crash_threshold);
     return ESP_OK;
 }
 
 void crash_detector_task(void *pvParameters) {
-    LIS2DH12TR_accelerations acc = { 0 };
-    float impact_magnitude;
-    LIS2DH12TR_init();
+    // Wait a bit to ensure acc data provider is running
+    vTaskDelay(pdMS_TO_TICKS(1000));
 
-    ESP_LOGE(TAG, "Crash detector task started");
+    ESP_LOGI(TAG, "Crash detector task started");
+
+    TickType_t last_wake_time = xTaskGetTickCount();
+    acc_data_t acc_data       = { 0 };
 
     while(1) {
-        if(LIS2DH12TR_read_acc(&acc) == LIS2DH12TR_READING_OK) {
-            impact_magnitude         = sqrtf(acc.x_acc * acc.x_acc + acc.y_acc * acc.y_acc + acc.z_acc * acc.z_acc);
+        // Get latest acceleration data from the centralized provider
+        if(acc_data_get(&acc_data) == ESP_OK && acc_data.is_valid) {
+            // Use total magnitude from the provider
+            float impact_magnitude = acc_data.magnitude;
+
+            // Adjust by removing 1g of gravity (if magnitude > 1g)
             float adjusted_magnitude = impact_magnitude > 1.0f ? impact_magnitude - 1.0f : 0.0f;
 
             if(adjusted_magnitude > crash_threshold && !crash_detected) {
@@ -127,9 +132,11 @@ void crash_detector_task(void *pvParameters) {
             if(adjusted_magnitude > crash_threshold / 2) {
                 ESP_LOGD(TAG, "High impact detected: %.2fg", adjusted_magnitude);
             }
+        } else {
+            ESP_LOGW(TAG, "Failed to get valid accelerometer data");
         }
 
-        vTaskDelay(pdMS_TO_TICKS(SAMPLE_INTERVAL_MS));
+        vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(SAMPLE_INTERVAL_MS));
     }
 }
 
@@ -147,13 +154,13 @@ bool crash_detector_get_last_event(crash_event_t *event) {
 void crash_detector_reset(void) {
     crash_detected = false;
     pcf8574_set_pin(CRASH_DET_PIN, true); // release
-    ESP_LOGE(TAG, "Crash state manually reset");
+    ESP_LOGI(TAG, "Crash state manually reset");
 }
 
 void crash_detector_set_threshold(float threshold) {
     if(threshold > 0) {
         crash_threshold = threshold;
-        ESP_LOGE(TAG, "Crash threshold updated to %.2fg", threshold);
+        ESP_LOGI(TAG, "Crash threshold updated to %.2fg", threshold);
     }
 }
 

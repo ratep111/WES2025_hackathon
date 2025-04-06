@@ -154,6 +154,24 @@ void gui_set_door_open(gui_doors_t door);
  */
 void gui_set_door_closed(gui_doors_t door);
 
+/**
+ * @brief Set the current temperature value on the UI.
+ *
+ * Updates the temperature label with the given string.
+ *
+ * @param temp A string representing the temperature (e.g., "23°C").
+ */
+void gui_local_temp_set(const char *temp);
+
+/**
+ * @brief Set the current temperature value on the UI.
+ *
+ * Updates the temperature label with the given string.
+ *
+ * @param temp A string representing the temperature (e.g., "23°C").
+ */
+void gui_hum_temp_set(const char *hum);
+
 
 #ifdef __cplusplus
 }
