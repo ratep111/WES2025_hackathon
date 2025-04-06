@@ -123,9 +123,9 @@ lv_obj_t *ui_dummy;
 void ui_scr2_screen_init(void);
 lv_obj_t *ui_scr2;
 lv_obj_t *ui____initial_actions0;
+const lv_img_dsc_t *ui_imgset_2015748803[1] = { &ui_img_360038530 };
 const lv_img_dsc_t *ui_imgset_1734929542[1] = { &ui_img_474709716 };
 const lv_img_dsc_t *ui_imgset_weather_[2]   = { &ui_img_weather_1_png, &ui_img_weather_2_png };
-const lv_img_dsc_t *ui_imgset_2015748803[1] = { &ui_img_360038530 };
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16

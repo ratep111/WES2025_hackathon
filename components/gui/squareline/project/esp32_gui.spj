@@ -5170,7 +5170,7 @@
               {
                 "nid": -1038749250,
                 "strtype": "OBJECT/Hidden",
-                "strval": "False",
+                "strval": "True",
                 "InheritedType": 2
               },
               {
@@ -18732,7 +18732,7 @@
                       {
                         "nid": -1389020831,
                         "strtype": "OBJECT/Hidden",
-                        "strval": "False",
+                        "strval": "True",
                         "InheritedType": 2
                       },
                       {
@@ -19035,7 +19035,7 @@
                       {
                         "nid": -1455498935,
                         "strtype": "OBJECT/Hidden",
-                        "strval": "False",
+                        "strval": "True",
                         "InheritedType": 2
                       },
                       {
@@ -19338,7 +19338,7 @@
                       {
                         "nid": -1372163117,
                         "strtype": "OBJECT/Hidden",
-                        "strval": "False",
+                        "strval": "True",
                         "InheritedType": 2
                       },
                       {
@@ -19641,7 +19641,7 @@
                       {
                         "nid": -437097365,
                         "strtype": "OBJECT/Hidden",
-                        "strval": "False",
+                        "strval": "True",
                         "InheritedType": 2
                       },
                       {
@@ -19944,7 +19944,7 @@
                       {
                         "nid": 2143414749,
                         "strtype": "OBJECT/Hidden",
-                        "strval": "False",
+                        "strval": "True",
                         "InheritedType": 2
                       },
                       {
@@ -20544,7 +20544,7 @@
               {
                 "nid": 815267528,
                 "strtype": "OBJECT/Hidden",
-                "strval": "True",
+                "strval": "False",
                 "InheritedType": 2
               },
               {
@@ -24470,7 +24470,8 @@
                 "InheritedType": 4
               }
             ],
-            "saved_objtypeKey": "PANEL"
+            "saved_objtypeKey": "PANEL",
+            "tree_closed": true
           },
           {
             "guid": "GUID32428895-986482S98495",
@@ -29819,7 +29820,7 @@
                   {
                     "disabled": false,
                     "nid": 161141297,
-                    "strtype": "BUTTON/EventHandler",
+                    "strtype": "_event/EventHandler",
                     "strval": "CLICKED",
                     "childs": [
                       {
@@ -29842,7 +29843,7 @@
                       },
                       {
                         "nid": 470183142,
-                        "strtype": "_custom/action",
+                        "strtype": "_event/action",
                         "strval": "CALL FUNCTION",
                         "childs": [
                           {
@@ -34649,7 +34650,7 @@
     "theme_color2": 0,
     "uiExportFolderPath": "...",
     "projectExportFolderPath": "...",
-    "backup_cnt": 135,
+    "backup_cnt": 136,
     "autosave_cnt": 0,
     "lvgl_version": "8.3.6",
     "callfuncsexport": "C_FILE",

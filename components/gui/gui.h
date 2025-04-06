@@ -38,6 +38,7 @@ typedef enum {
     GUI_PROX_BACK_CLOSE,
     GUI_PROX_BACK_MID,
     GUI_PROX_BACK_FAR,
+    GUI_PROX_NOTHING_NEAR,
     GUI_PROX_NUM
 } gui_proximity_t;
 
