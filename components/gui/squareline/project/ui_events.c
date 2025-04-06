@@ -9,3 +9,7 @@
 void btn_clicked(lv_event_t *e) {
     // Your code here
 }
+
+void ui_camera_btn_pressed(lv_event_t *e) {
+    // Your code here
+}

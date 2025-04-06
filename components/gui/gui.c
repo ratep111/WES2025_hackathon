@@ -190,7 +190,7 @@ void gui_weather_set(const char *weather) {
     return;
 }
 
-void gui_temp_set(const char *temp) {
+void gui_sntp_temp_set(const char *temp) {
     if(ui_temp_lbl == NULL) {
         ESP_LOGE(TAG, "Tmperature label not initialized!");
         return;
@@ -240,6 +240,26 @@ void gui_set_door_closed(gui_doors_t door) {
         ui_door_back_left_open_bar,
         ui_door_trunk_open_bar };
     lv_obj_clear_flag(doors[door], LV_OBJ_FLAG_HIDDEN);
+}
+
+void gui_local_temp_set(const char *temp) {
+    if(ui_top_temp_lbl == NULL) {
+        ESP_LOGE(TAG, "Top temperature label not initialized!");
+        return;
+    }
+
+    lv_label_set_text(ui_top_temp_lbl, temp);
+    return;
+}
+
+void gui_hum_temp_set(const char *hum) {
+    if(ui_top_hum_lbl == NULL) {
+        ESP_LOGE(TAG, "Top humidity label not initialized!");
+        return;
+    }
+
+    lv_label_set_text(ui_top_hum_lbl, hum);
+    return;
 }
 
 //---------------------------- PRIVATE FUNCTIONS ------------------------------

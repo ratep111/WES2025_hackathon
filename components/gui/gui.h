@@ -116,7 +116,7 @@ void gui_weather_set(const char *weather);
  *
  * @param temp A string representing the temperature (e.g., "23°C").
  */
-void gui_temp_set(const char *temp);
+void gui_sntp_temp_set(const char *temp);
 
 /**
  * @brief Convert a temperature value into a formatted string with a degree symbol.

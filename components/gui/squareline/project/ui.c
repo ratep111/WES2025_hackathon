@@ -53,8 +53,10 @@ lv_obj_t *ui_music_note_img;
 lv_obj_t *ui_spotify_lbl;
 lv_obj_t *ui_play_music_btn;
 lv_obj_t *ui_Image6;
-lv_obj_t *ui_previous_btn;
-lv_obj_t *ui_forward_btn;
+lv_obj_t *ui_play_music_btn1;
+lv_obj_t *ui_Image20;
+lv_obj_t *ui_play_music_btn2;
+lv_obj_t *ui_Image19;
 void ui_event_gesture_panel_3(lv_event_t *e);
 lv_obj_t *ui_gesture_panel_3;
 lv_obj_t *ui_scrolldots2;
@@ -107,9 +109,14 @@ lv_obj_t *ui_fuel_max_lbl;
 lv_obj_t *ui_temperature_img;
 lv_obj_t *ui_top_temp_lbl;
 lv_obj_t *ui_humid_img;
-lv_obj_t *ui_Label3;
+lv_obj_t *ui_top_hum_lbl;
+lv_obj_t *ui_botton_panel;
+void ui_event_camera_btn(lv_event_t *e);
+lv_obj_t *ui_camera_btn;
+lv_obj_t *ui_camera_img;
 lv_obj_t *ui_setting_btn;
 lv_obj_t *ui_settings_img;
+lv_obj_t *ui_dummy;
 
 
 // SCREEN: ui_scr2
@@ -118,6 +125,7 @@ lv_obj_t *ui_scr2;
 lv_obj_t *ui____initial_actions0;
 const lv_img_dsc_t *ui_imgset_1734929542[1] = { &ui_img_474709716 };
 const lv_img_dsc_t *ui_imgset_weather_[2]   = { &ui_img_weather_1_png, &ui_img_weather_2_png };
+const lv_img_dsc_t *ui_imgset_2015748803[1] = { &ui_img_360038530 };
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
@@ -539,7 +547,6 @@ void ui_event_gesture_panel_5(lv_event_t *e) {
         lv_indev_wait_release(lv_indev_get_act());
         _ui_flag_modify(ui_gesture_panel_3, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
         _ui_flag_modify(ui_gesture_panel_5, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
-        up_Animation(ui_content_panel_3, 0);
     }
 }
 void ui_event_gesture_panel_4(lv_event_t *e) {
@@ -560,6 +567,13 @@ void ui_event_gesture_panel_4(lv_event_t *e) {
         _ui_flag_modify(ui_gesture_panel_5, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
         _ui_flag_modify(ui_gesture_panel_4, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
         up_Animation(ui_content_panel_5, 0);
+    }
+}
+void ui_event_camera_btn(lv_event_t *e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t *target           = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
+        ui_camera_btn_pressed(e);
     }
 }
 
