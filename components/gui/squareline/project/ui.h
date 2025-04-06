@@ -59,8 +59,10 @@ extern lv_obj_t *ui_music_note_img;
 extern lv_obj_t *ui_spotify_lbl;
 extern lv_obj_t *ui_play_music_btn;
 extern lv_obj_t *ui_Image6;
-extern lv_obj_t *ui_previous_btn;
-extern lv_obj_t *ui_forward_btn;
+extern lv_obj_t *ui_play_music_btn1;
+extern lv_obj_t *ui_Image20;
+extern lv_obj_t *ui_play_music_btn2;
+extern lv_obj_t *ui_Image19;
 void ui_event_gesture_panel_3(lv_event_t *e);
 extern lv_obj_t *ui_gesture_panel_3;
 extern lv_obj_t *ui_scrolldots2;
@@ -113,9 +115,14 @@ extern lv_obj_t *ui_fuel_max_lbl;
 extern lv_obj_t *ui_temperature_img;
 extern lv_obj_t *ui_top_temp_lbl;
 extern lv_obj_t *ui_humid_img;
-extern lv_obj_t *ui_Label3;
+extern lv_obj_t *ui_top_hum_lbl;
+extern lv_obj_t *ui_botton_panel;
+void ui_event_camera_btn(lv_event_t *e);
+extern lv_obj_t *ui_camera_btn;
+extern lv_obj_t *ui_camera_img;
 extern lv_obj_t *ui_setting_btn;
 extern lv_obj_t *ui_settings_img;
+extern lv_obj_t *ui_dummy;
 // SCREEN: ui_scr2
 void ui_scr2_screen_init(void);
 extern lv_obj_t *ui_scr2;
@@ -125,12 +132,13 @@ LV_IMG_DECLARE(ui_img_1148992643);               // assets/bg2-min.png
 LV_IMG_DECLARE(ui_img_sun_rays_small_cloud_png); // assets/sun.rays.small.cloud.png
 LV_IMG_DECLARE(ui_img_1040273307);               // assets/music-note(1).png
 LV_IMG_DECLARE(ui_img_play_png);                 // assets/play.png
-LV_IMG_DECLARE(ui_img_backward_png);             // assets/backward.png
 LV_IMG_DECLARE(ui_img_forward_png);              // assets/forward.png
+LV_IMG_DECLARE(ui_img_backward_png);             // assets/backward.png
 LV_IMG_DECLARE(ui_img_car2_mini_png);            // assets/car2_mini.png
 LV_IMG_DECLARE(ui_img_474709716);                // assets/icons8-fuel-50.png
 LV_IMG_DECLARE(ui_img_temper_png);               // assets/temper.png
 LV_IMG_DECLARE(ui_img_weather_1_png);            // assets/weather_1.png
+LV_IMG_DECLARE(ui_img_360038530);                // assets/icons8-camera-64.png
 LV_IMG_DECLARE(ui_img_settings_png);             // assets/settings.png
 LV_IMG_DECLARE(ui_img_weather_2_png);            // assets/weather_2.png
 

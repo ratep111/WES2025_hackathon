@@ -10,6 +10,8 @@
 extern "C" {
 #endif
 
+void ui_camera_btn_pressed(lv_event_t *e);
+
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif
