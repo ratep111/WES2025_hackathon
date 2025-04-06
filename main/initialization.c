@@ -30,9 +30,9 @@
 #include "i2cdev.h"
 #include "pcf8574.h"
 #include "speaker.h"
+#include "my_mqtt.h"
 #include "gui_controller.h"
 #include "acc_data_provider.h"
-
 
 
 /*******************************************************************************/
@@ -90,6 +90,7 @@ static const i2c_config_t _i2c_config = {
 void initialization_peripheral_creator() {
     ESP_LOGI(TAG, "System boot...");
 
+
     // --- Init i2cdev mutex system (MUST come before any pcf8574 or other i2cdev use) ---
     i2cdev_init();
 
@@ -131,6 +132,8 @@ void initialization_peripheral_creator() {
         return;
     }
 
+    ESP_ERROR_CHECK(mqtt_client_init());
+
     // --- Initialize UI + perf monitor ---
     gui_init();
     perfmon_start();
@@ -162,6 +165,7 @@ void initialization_peripheral_creator() {
 void initailization_task_creator() {
 
     ESP_LOGI(TAG, "Launching sensor tasks...");
+
 
     xTaskCreatePinnedToCore(parking_sensor_task, "parking_sensor", 4096, NULL, 5, NULL, 0);
     xTaskCreatePinnedToCore(day_night_task, "day_night_sensor", 4096, NULL, 5, NULL, 0);
