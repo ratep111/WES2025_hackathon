@@ -47,10 +47,10 @@ static EventGroupHandle_t gui_event_group      = NULL;
 
 // Current state storage
 static int current_speed                            = 0;
-static gui_proximity_t current_proximity            = GUI_PROX_NONE;
+static gui_proximity_t current_proximity            = GUI_PROX_NUM; // Default to invalid value, will be set correctly
 static sht3x_sensors_values_t current_temp_humidity = { 0 };
 static light_state_t current_light_state            = LIGHT_STATE_UNKNOWN;
-static door_state_t door_states[GUI_DOOR_COUNT]     = { 0 };
+static door_state_t door_states[gui_num_of_doors]   = { 0 }; // Match enum in gui.h
 static bool crash_detected                          = false;
 static int fuel_percentage                          = 100; // Mock value
 
@@ -60,10 +60,10 @@ static void door_state_callback(door_state_t state);
 static void light_state_callback(light_state_t state);
 
 /**
- * @brief Main task for the GUI controller
- * 
- * This task periodically checks for events and updates the GUI accordingly
- */
+  * @brief Main task for the GUI controller
+  * 
+  * This task periodically checks for events and updates the GUI accordingly
+  */
 static void gui_controller_task(void *pvParameters) {
     char time_str[16] = { 0 };
     char date_str[16] = { 0 };
@@ -97,11 +97,11 @@ static void gui_controller_task(void *pvParameters) {
 
         // Handle door updates
         if(events & GUI_EVT_DOOR_UPDATE) {
-            for(int i = 0; i < GUI_DOOR_COUNT; i++) {
+            for(int i = 0; i < gui_num_of_doors; i++) {
                 if(door_states[i] == DOOR_STATE_OPEN) {
-                    gui_set_door_open(i);
+                    gui_set_door_open((gui_doors_t) i);
                 } else if(door_states[i] == DOOR_STATE_CLOSED) {
-                    gui_set_door_closed(i);
+                    gui_set_door_closed((gui_doors_t) i);
                 }
             }
             xEventGroupClearBits(gui_event_group, GUI_EVT_DOOR_UPDATE);
@@ -166,8 +166,8 @@ static void gui_controller_task(void *pvParameters) {
 }
 
 /**
- * @brief Updates proximity based on parking sensor data
- */
+  * @brief Updates proximity based on parking sensor data
+  */
 static void update_proximity_from_parking_sensor(void) {
     uint32_t distance;
     esp_err_t err = parking_sensor_get_distance(&distance);
@@ -194,7 +194,10 @@ static void update_proximity_from_parking_sensor(void) {
     } else if(distance < DISTANCE_SAFE) {
         current_proximity = is_forward ? GUI_PROX_FRONT_FAR : GUI_PROX_BACK_FAR;
     } else {
-        current_proximity = GUI_PROX_NONE;
+        // No proximity detected - this needs to be handled differently
+        // since GUI_PROX_NONE is not a valid value in the enum
+        current_proximity = GUI_PROX_NUM; // Setting to invalid value that will be caught by validation
+        return;                           // Skip setting the event bit for this case
     }
 
     // Only update the GUI if we have a valid proximity value
@@ -211,8 +214,8 @@ static void update_proximity_from_parking_sensor(void) {
 }
 
 /**
-  * @brief Crash event callback
-  */
+   * @brief Crash event callback
+   */
 static void crash_event_callback(crash_event_t *event) {
     crash_detected = true;
     ESP_LOGI(TAG, "Crash detected! Impact force: %.2f g", event->impact_force);
@@ -227,21 +230,18 @@ static void crash_event_callback(crash_event_t *event) {
 }
 
 /**
-  * @brief Door state change callback
-  */
+   * @brief Door state change callback
+   */
 static void door_state_callback(door_state_t state) {
-    // For simplicity, we're using a single callback for all doors
-    // In a real application, you'd want to determine which door changed
-
     // Mock: Update the driver's door for demonstration
-    door_states[GUI_DOOR_FRONT_LEFT] = state;
+    door_states[front_left] = state; // Use enum from gui.h
 
     xEventGroupSetBits(gui_event_group, GUI_EVT_DOOR_UPDATE);
 }
 
 /**
-  * @brief Light state change callback
-  */
+   * @brief Light state change callback
+   */
 static void light_state_callback(light_state_t state) {
     current_light_state = state;
     xEventGroupSetBits(gui_event_group, GUI_EVT_LIGHT_UPDATE);
@@ -251,8 +251,8 @@ static void light_state_callback(light_state_t state) {
 }
 
 /**
-  * @brief Periodic temperature reading task
-  */
+   * @brief Periodic temperature reading task
+   */
 static void temp_sensor_task(void *pvParameters) {
     TickType_t last_wake_time = xTaskGetTickCount();
 
@@ -277,8 +277,8 @@ static void temp_sensor_task(void *pvParameters) {
 }
 
 /**
-  * @brief Sensor reading function for the speed estimator
-  */
+   * @brief Sensor reading function for the speed estimator
+   */
 static void speed_sensor_task(void *pvParameters) {
     TickType_t last_wake_time = xTaskGetTickCount();
 
@@ -286,6 +286,8 @@ static void speed_sensor_task(void *pvParameters) {
         // Get speed from the speed estimator
         float speed_kmh = speed_estimator_get_speed_kmh();
         current_speed   = (int) speed_kmh;
+
+        // ESP_LOGE(TAG, "Current speed: %.2f", speed_kmh);
 
         // Set the event bit to update the GUI
         xEventGroupSetBits(gui_event_group, GUI_EVT_SPEED_UPDATE);
@@ -299,8 +301,8 @@ static void speed_sensor_task(void *pvParameters) {
 }
 
 /**
- * @brief Task to periodically update proximity readings
- */
+  * @brief Task to periodically update proximity readings
+  */
 static void proximity_sensor_task(void *pvParameters) {
     TickType_t last_wake_time = xTaskGetTickCount();
 
@@ -314,11 +316,11 @@ static void proximity_sensor_task(void *pvParameters) {
 }
 
 /**
- * @brief Initialize the GUI controller
- * 
- * This function initializes all sensor modules and registers callbacks
- * for sensor events to update the GUI
- */
+  * @brief Initialize the GUI controller
+  * 
+  * This function initializes all sensor modules and registers callbacks
+  * for sensor events to update the GUI
+  */
 esp_err_t gui_controller_init(void) {
     esp_err_t ret = ESP_OK;
 
@@ -380,8 +382,8 @@ esp_err_t gui_controller_init(void) {
     return ESP_OK;
 }
 /**
-  * @brief Deinitialize the GUI controller
-  */
+   * @brief Deinitialize the GUI controller
+   */
 esp_err_t gui_controller_deinit(void) {
     if(gui_controller_task_handle != NULL) {
         vTaskDelete(gui_controller_task_handle);
@@ -397,10 +399,10 @@ esp_err_t gui_controller_deinit(void) {
 }
 
 /**
-  * @brief Simulate a fuel level change (for demo purposes)
-  * 
-  * @param percentage New fuel level (0-100)
-  */
+   * @brief Simulate a fuel level change (for demo purposes)
+   * 
+   * @param percentage New fuel level (0-100)
+   */
 void gui_controller_set_fuel(int percentage) {
     if(percentage < 0)
         percentage = 0;
